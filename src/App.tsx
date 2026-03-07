@@ -107,7 +107,9 @@ function SpinWheel({ players, onDone }) {
         rafRef.current = requestAnimationFrame(animate);
       } else {
         setSpinning(false);
-        const norm = ((-(angleRef.current) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        // Pointer is at the right (0 degrees). Slices start from top (-PI/2 offset).
+        // To find which slice is at the pointer, we need to account for the -PI/2 offset.
+        const norm = ((-angleRef.current + Math.PI / 2) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
         const winIdx = Math.floor(norm / slice) % count;
         setResult(players[winIdx]);
       }
