@@ -81,6 +81,44 @@ const STYLES = {
     red:   { background:"rgba(239,68,68,.1)", borderColor:"rgba(239,68,68,.35)", color:"var(--red-neg)" },
   },
 
+  // ── Setup screen ─────────────────────────────────────────────────────────────
+  setup: {
+    wrap:        { width:"100%", maxWidth:460 },
+    heading:     { textAlign:"center", marginBottom:36 },
+    h1:          { fontSize:50, fontWeight:900, fontFamily:"'Playfair Display',serif", letterSpacing:-1 },
+    sub:         { fontSize:15, marginTop:8, fontStyle:"italic", fontFamily:"system-ui" },
+    playerNum:   { width:22, height:22, borderRadius:"50%", background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.1)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, flexShrink:0 },
+    removeBtn:   { width:44, height:44, background:"rgba(192,57,43,.12)", border:"1px solid rgba(192,57,43,.25)", borderRadius:8, color:"#e07060", cursor:"pointer", fontSize:19, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
+    addBtn:      { width:"100%", padding:"10px", background:"transparent", border:"1px dashed var(--border-mid)", borderRadius:10, color:"var(--text-2)", cursor:"pointer", fontSize:13, marginTop:4 },
+    stakeWrap:   { display:"flex", alignItems:"center", background:"rgba(255,255,255,.03)", borderRadius:12, border:"1px solid rgba(255,255,255,.1)", overflow:"hidden", marginBottom:6 },
+    stakeBtn:    { width:54, height:50, background:"rgba(255,255,255,.03)", border:"none", fontSize:26 },
+    stakeBtnL:   { borderRight:"1px solid rgba(255,255,255,.08)" },
+    stakeBtnR:   { borderLeft:"1px solid rgba(255,255,255,.08)" },
+    stakeVal:    { flex:1, textAlign:"center", color:"var(--gold-2)", fontSize:24, fontWeight:700, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    stakeHint:   { color:"var(--text-3)", fontSize:11, textAlign:"center", marginBottom:22 },
+  },
+
+  // ── Spin screen ──────────────────────────────────────────────────────────────
+  spin: {
+    wrap:      { width:"100%", maxWidth:440, textAlign:"center" },
+    heading:   { fontFamily:"'Playfair Display',serif", fontSize:34, fontWeight:900, marginBottom:6, textShadow:`0 2px 20px rgba(201,168,76,.35)` },
+    sub:       { fontSize:16, marginBottom:32, fontStyle:"italic" },
+    spotlight: { position:"relative", background:"radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%)", borderRadius:24, padding:"0 0 32px" },
+    result:    { textAlign:"center" },
+    resultName:{ fontSize:40, fontWeight:900, fontFamily:"'Playfair Display',serif", marginBottom:24, letterSpacing:-.5 },
+  },
+
+  // ── Trump screen ─────────────────────────────────────────────────────────────
+  trump: {
+    wrap:          { width:"100%", maxWidth:480, textAlign:"center" },
+    heading:       { fontFamily:"'Playfair Display',serif", fontSize:34, fontWeight:900, marginBottom:4 },
+    sub:           { fontSize:15, marginBottom:10, fontStyle:"italic" },
+    dealerPills:   { display:"flex", justifyContent:"center", flexWrap:"wrap", gap:6 },
+    dealerPillDef: { padding:"3px 12px", borderRadius:20, fontSize:13, background:"rgba(255,255,255,.04)", border:"1px solid rgba(255,255,255,.08)", fontWeight:400, fontFamily:"'Playfair Display',serif", boxShadow:"none" },
+    separator:     { fontSize:12 },
+    backBtn:       { marginTop:12, background:"none", border:"none", cursor:"pointer", fontSize:14, fontFamily:"system-ui", fontStyle:"italic", textDecoration:"underline", minHeight:44, padding:"0 8px", display:"inline-flex", alignItems:"center" },
+  },
+
 } as const;
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
@@ -589,7 +627,7 @@ function TrumpPicker({ onPick, onBack=null }) {
         ))}
       </div>
       {onBack&&(
-        <button onClick={onBack} style={{marginTop:24,background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:14,fontFamily:"'EB Garamond',serif",fontStyle:"italic",textDecoration:"underline",minHeight:44,padding:"0 8px",display:"inline-flex",alignItems:"center"}}>← Re-spin for dealer</button>
+        <button onClick={onBack} style={{...STYLES.trump.backBtn, color:"var(--text-2)"}}>← Re-spin for dealer</button>
       )}
     </div>
   );
@@ -720,11 +758,11 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
   const valid=filled.length>=2&&!hasDupes;
 
   return (
-    <div style={{width:"100%",maxWidth:460}} className="fade-up">
-      <div style={{textAlign:"center",marginBottom:36}}>
+    <div style={STYLES.setup.wrap} className="fade-up">
+      <div style={STYLES.setup.heading}>
         <CardFan/>
-        <h1 style={{color:"var(--gold-2)",fontSize:50,fontWeight:900,fontFamily:"'Playfair Display',serif",letterSpacing:-1,textShadow:`0 2px 24px rgba(201,168,76,.35),0 0 60px rgba(201,168,76,.15)`}}>Nominations</h1>
-        <p style={{color:"var(--text-2)",fontSize:15,marginTop:8,fontStyle:"italic",fontFamily:"system-ui"}}>The trick-taking scoring companion</p>
+        <h1 style={{...STYLES.setup.h1, color:"var(--gold-2)", textShadow:`0 2px 24px rgba(201,168,76,.35),0 0 60px rgba(201,168,76,.15)`}}>Nominations</h1>
+        <p style={{...STYLES.setup.sub, color:"var(--text-2)"}}>The trick-taking scoring companion</p>
       </div>
       <Panel>
         <Lbl style={{marginBottom:12}}>
@@ -732,16 +770,16 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
         </Lbl>
         {names.map((name,i)=>(
           <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
-            <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",color:C.mutedD,fontSize:11,fontWeight:700,flexShrink:0}}>{i+1}</div>
+            <div style={{...STYLES.setup.playerNum, color:"var(--text-2)"}}>{i+1}</div>
             <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
               style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
             {names.length>2&&(
-              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={{width:44,height:44,background:"rgba(192,57,43,.12)",border:"1px solid rgba(192,57,43,.25)",borderRadius:8,color:"#e07060",cursor:"pointer",fontSize:19,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
+              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={STYLES.setup.removeBtn}>×</button>
             )}
           </div>
         ))}
         {names.length<8&&(
-          <button onClick={()=>setNames(n=>[...n,""])} style={{width:"100%",padding:"10px",background:"transparent",border:"1px dashed var(--border-mid)",borderRadius:10,color:"var(--text-2)",cursor:"pointer",fontSize:13,marginTop:4}}>＋ Add Player</button>
+          <button onClick={()=>setNames(n=>[...n,""])} style={STYLES.setup.addBtn}>＋ Add Player</button>
         )}
         {hasDupes&&(
           <div style={{color:C.redL,fontSize:12,marginTop:8,padding:"7px 12px",background:"rgba(192,57,43,.1)",borderRadius:8,border:"1px solid rgba(192,57,43,.22)"}}>⚠ Player names must be unique</div>
@@ -761,12 +799,12 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
           ))}
         </div>
         <Lbl style={{marginBottom:10}}>Stake per point</Lbl>
-        <div style={{display:"flex",alignItems:"center",background:"rgba(255,255,255,.03)",borderRadius:12,border:"1px solid rgba(255,255,255,.1)",overflow:"hidden",marginBottom:6}}>
-          <button onClick={()=>setStake(s=>Math.max(5,s-5))} disabled={stake<=5} className="press" style={{width:54,height:50,background:"rgba(255,255,255,.03)",border:"none",borderRight:"1px solid rgba(255,255,255,.08)",color:stake<=5?C.mutedD:C.cream,fontSize:26,cursor:stake<=5?"not-allowed":"pointer"}}>−</button>
-          <div style={{flex:1,textAlign:"center",color:C.gold,fontSize:24,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{fmtStake(stake)}</div>
-          <button onClick={()=>setStake(s=>s+5)} className="press" style={{width:54,height:50,background:"rgba(255,255,255,.03)",border:"none",borderLeft:"1px solid rgba(255,255,255,.08)",color:C.cream,fontSize:26,cursor:"pointer"}}>+</button>
+        <div style={STYLES.setup.stakeWrap}>
+          <button onClick={()=>setStake(s=>Math.max(5,s-5))} disabled={stake<=5} className="press" style={{...STYLES.setup.stakeBtn, ...STYLES.setup.stakeBtnL, color:"var(--text-1)", cursor:stake<=5?"not-allowed":"pointer"}}>−</button>
+          <div style={STYLES.setup.stakeVal}>{fmtStake(stake)}</div>
+          <button onClick={()=>setStake(s=>s+5)} className="press" style={{...STYLES.setup.stakeBtn, ...STYLES.setup.stakeBtnR, color:"var(--text-1)", cursor:"pointer"}}>+</button>
         </div>
-        <div style={{color:C.mutedD,fontSize:11,textAlign:"center",marginBottom:22}}>multiples of 5p</div>
+        <div style={STYLES.setup.stakeHint}>multiples of 5p</div>
         <button className="press btn-primary" onClick={()=>valid&&onStart(names.filter(n=>n.trim()),rounds,stake)} style={{
           width:"100%",padding:"16px",borderRadius:14,
           border:`1.5px solid ${valid?"var(--border-strong)":"var(--border-subtle)"}`,
@@ -990,14 +1028,10 @@ export default function App() {
   // ── SPIN ──
   if(phase==="spin")return(
     <Felt center><style>{CSS}</style>
-      <div style={{width:"100%",maxWidth:440,textAlign:"center"}} className="fade-up">
-        <h2 style={{color:"var(--gold-2)",fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:6,textShadow:`0 2px 20px rgba(201,168,76,.35)`}}>Who deals first?</h2>
-        <p style={{color:"var(--text-2)",fontSize:16,marginBottom:32,fontStyle:"italic"}}>Spin the wheel to decide</p>
-        <div style={{
-          position:"relative",
-          background:"radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%)",
-          borderRadius:24, padding:"0 0 32px",
-        }}>
+      <div style={STYLES.spin.wrap} className="fade-up">
+        <h2 style={{...STYLES.spin.heading, color:"var(--gold-2)"}}>Who deals first?</h2>
+        <p style={{...STYLES.spin.sub, color:"var(--text-2)"}}>Spin the wheel to decide</p>
+        <div style={STYLES.spin.spotlight}>
           <SpinWheel players={players} onDone={afterSpin}/>
         </div>
       </div>
@@ -1007,25 +1041,24 @@ export default function App() {
   // ── TRUMP ──
   if(phase==="trump")return(
     <Felt center><style>{CSS}</style>
-      <div style={{width:"100%",maxWidth:480,textAlign:"center"}} className="fade-up">
+      <div style={STYLES.trump.wrap} className="fade-up">
         <Lbl style={{textAlign:"center",marginBottom:8}}>Round {round+1} of {totalRounds}</Lbl>
-        <h2 style={{color:"var(--text-1)",fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:4}}>{roundCards} cards dealt</h2>
-        <p style={{color:"var(--text-2)",fontSize:15,marginBottom:10,fontStyle:"italic"}}>{players[dealerIdx]} is dealing</p>
+        <h2 style={{...STYLES.trump.heading, color:"var(--text-1)"}}>{roundCards} cards dealt</h2>
+        <p style={{...STYLES.trump.sub, color:"var(--text-2)"}}>{players[dealerIdx]} is dealing</p>
         <Panel table style={{marginBottom:28,padding:"14px 18px"}}>
           <Lbl style={{marginBottom:10,textAlign:"center"}}>Dealer rotation this game</Lbl>
-          <div style={{display:"flex",justifyContent:"center",flexWrap:"wrap",gap:6}}>
+          <div style={STYLES.trump.dealerPills}>
             {players.map((p,i)=>(
               <div key={p} style={{display:"flex",alignItems:"center",gap:5}}>
                 <div style={{
-                  padding:"3px 12px",borderRadius:20,fontSize:13,
+                  ...STYLES.trump.dealerPillDef,
                   background:i===dealerIdx?"rgba(201,168,76,.16)":"rgba(255,255,255,.04)",
                   border:`1px solid ${i===dealerIdx?C.gold+"55":"rgba(255,255,255,.08)"}`,
                   color:i===dealerIdx?C.gold:C.cream,
                   fontWeight:i===dealerIdx?700:400,
-                  fontFamily:"'Playfair Display',serif",
                   boxShadow:i===dealerIdx?`0 0 10px ${C.gold}22`:"none"
                 }}>{p}{i===dealerIdx?" 🂡":""}</div>
-                {i<players.length-1&&<span style={{color:C.mutedD,fontSize:12}}>›</span>}
+                {i<players.length-1&&<span style={{...STYLES.trump.separator, color:"var(--text-3)"}}>›</span>}
               </div>
             ))}
           </div>
