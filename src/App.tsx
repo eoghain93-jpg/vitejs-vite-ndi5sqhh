@@ -81,21 +81,20 @@ const CSS = `
   .ripple-btn {animation:ripple 1.8s ease-out infinite;}
   .slide-in   {animation:slideIn .28s ease both;}
 
-  .nom-chip:hover:not(:disabled){transform:scale(1.12)!important;background:rgba(26,107,60,0.55)!important;}
+  .nom-chip:hover:not(:disabled){transform:scale(1.1)!important;background:var(--bg-raised)!important;border-color:var(--border-strong)!important;box-shadow:var(--shadow-gold)!important;}
   .nom-chip:active:not(:disabled){transform:scale(0.94)!important;}
   .suit-card:hover{transform:translateY(-8px) scale(1.06)!important;box-shadow:0 16px 40px rgba(0,0,0,.75)!important;}
   .suit-card:active{transform:translateY(-3px) scale(1.02)!important;}
   .press:active{transform:scale(0.97)!important;}
-  .tab-pill:hover{border-color:#c9a84c88!important;color:#c9a84c!important;}
-  .input-field:focus{border-color:#c9a84c88!important;box-shadow:0 0 0 3px #c9a84c11!important;}
+  .tab-pill:hover{border-color:var(--border-strong)!important;color:var(--gold-2)!important;}
+  .input-field:focus{border-color:var(--border-strong)!important;box-shadow:0 0 0 3px rgba(201,168,76,.08)!important;}
 
-  /* Gold shimmer on primary CTA */
+  /* Gold metallic gradient on primary CTA */
   .btn-primary{
-    background:linear-gradient(135deg,#1a6b3c,#0d4d28,#1a6b3c);
-    background-size:200% auto;
-    animation:shimmer 3s linear infinite;
+    background:linear-gradient(180deg,var(--gold-4) 0%,var(--gold-3) 50%,var(--gold-2) 100%);
   }
-  .btn-primary:hover{background-size:150% auto;box-shadow:0 6px 28px #c9a84c33!important;}
+  .btn-primary:hover{box-shadow:var(--shadow-gold)!important;filter:brightness(1.12);}
+  .btn-primary:active{filter:brightness(0.95);}
 `;
 
 // ─── FELT BG ──────────────────────────────────────────────────────────────────
@@ -223,19 +222,28 @@ function Progress({ round, total }) {
 // ─── BTN ──────────────────────────────────────────────────────────────────────
 function Btn({ children, onClick, disabled=false, v="def", full=false, sm=false, ripple=false }) {
   const base = {
-    padding:sm?"9px 18px":"14px 28px", borderRadius:14, fontWeight:700,
-    cursor:disabled?"not-allowed":"pointer", fontFamily:"'Playfair Display',serif",
-    fontSize:sm?13:16, border:"1.5px solid", width:full?"100%":undefined,
-    opacity:disabled?.38:1, transition:"all .18s ease", letterSpacing:.3,
+    padding: sm ? "10px 18px" : "14px 28px",
+    borderRadius: 10,
+    fontWeight: 700,
+    cursor: disabled ? "not-allowed" : "pointer",
+    fontFamily: "system-ui,'Segoe UI',sans-serif",
+    fontSize: sm ? 13 : 15,
+    border: "1.5px solid",
+    width: full ? "100%" : undefined,
+    minHeight: sm ? 40 : 48,
+    opacity: disabled ? 0.38 : 1,
+    transition: `all var(--dur-fast) var(--ease-smooth)`,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase" as const,
   };
   const vs = {
-    def:  {background:"rgba(255,255,255,.04)", borderColor:C.mutedD, color:C.cream},
-    ghost:{background:"rgba(255,255,255,.04)", borderColor:"rgba(255,255,255,.14)", color:C.cream},
-    gold: {borderColor:C.gold, color:C.gold},
-    red:  {background:"rgba(192,57,43,.12)",   borderColor:"rgba(192,57,43,.35)",    color:"#e07060"},
+    def:   { background: "var(--bg-raised)", borderColor: "var(--border-subtle)", color: "var(--text-1)" },
+    ghost: { background: "transparent", borderColor: "var(--border-mid)", color: "var(--text-2)" },
+    gold:  { borderColor: "var(--border-strong)", color: "var(--gold-1)" },
+    red:   { background: "rgba(239,68,68,.1)", borderColor: "rgba(239,68,68,.35)", color: "var(--red-neg)" },
   };
-  const cls = ["press", v==="gold"?"btn-primary":"", ripple&&!disabled?"ripple-btn":""].join(" ");
-  return <button className={cls} onClick={!disabled?onClick:undefined} style={{...base,...vs[v]}}>{children}</button>;
+  const cls = ["press", v === "gold" ? "btn-primary" : "", ripple && !disabled ? "ripple-btn" : ""].join(" ");
+  return <button className={cls} onClick={!disabled ? onClick : undefined} style={{...base,...vs[v]}}>{children}</button>;
 }
 
 // ─── SPIN WHEEL ───────────────────────────────────────────────────────────────
