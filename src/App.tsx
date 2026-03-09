@@ -597,14 +597,14 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
           <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
             <div style={{width:22,height:22,borderRadius:"50%",background:"rgba(255,255,255,.06)",border:"1px solid rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",color:C.mutedD,fontSize:11,fontWeight:700,flexShrink:0}}>{i+1}</div>
             <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
-              style={{flex:1,background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.1)",borderRadius:10,padding:"11px 14px",color:C.cream,fontSize:15,outline:"none",transition:"border-color .2s,box-shadow .2s"}}/>
+              style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
             {names.length>2&&(
               <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={{width:34,height:34,background:"rgba(192,57,43,.12)",border:"1px solid rgba(192,57,43,.25)",borderRadius:8,color:"#e07060",cursor:"pointer",fontSize:19,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
             )}
           </div>
         ))}
         {names.length<8&&(
-          <button onClick={()=>setNames(n=>[...n,""])} style={{width:"100%",padding:"10px",background:"rgba(26,107,60,.1)",border:"1px dashed rgba(26,107,60,.4)",borderRadius:10,color:C.muted,cursor:"pointer",fontSize:13,marginTop:4}}>＋ Add Player</button>
+          <button onClick={()=>setNames(n=>[...n,""])} style={{width:"100%",padding:"10px",background:"transparent",border:"1px dashed var(--border-mid)",borderRadius:10,color:"var(--text-2)",cursor:"pointer",fontSize:13,marginTop:4}}>＋ Add Player</button>
         )}
         {hasDupes&&(
           <div style={{color:C.redL,fontSize:12,marginTop:8,padding:"7px 12px",background:"rgba(192,57,43,.1)",borderRadius:8,border:"1px solid rgba(192,57,43,.22)"}}>⚠ Player names must be unique</div>
@@ -615,11 +615,11 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
           {[5,7,10,13].map(r=>(
             <button key={r} onClick={()=>setRounds(r)} className="press" style={{
               flex:1,padding:"12px 0",borderRadius:10,
-              border:`1.5px solid ${rounds===r?C.gold:"rgba(255,255,255,.1)"}`,
-              background:rounds===r?"rgba(201,168,76,.12)":"rgba(255,255,255,.03)",
-              color:rounds===r?C.gold:C.cream,fontWeight:rounds===r?700:400,
+              border:`1.5px solid ${rounds===r?"var(--border-strong)":"var(--border-subtle)"}`,
+              background:rounds===r?"rgba(201,168,76,.1)":"var(--bg-raised)",
+              color:rounds===r?"var(--gold-1)":"var(--text-2)",fontWeight:rounds===r?700:400,
               cursor:"pointer",fontSize:17,fontFamily:"'Playfair Display',serif",
-              transition:"all .15s",boxShadow:rounds===r?`0 0 14px ${C.gold}22`:"none"
+              transition:"all .15s",boxShadow:rounds===r?"var(--shadow-gold)":"none"
             }}>{r}</button>
           ))}
         </div>
@@ -631,10 +631,11 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
         </div>
         <div style={{color:C.mutedD,fontSize:11,textAlign:"center",marginBottom:22}}>multiples of 5p</div>
         <button className="press btn-primary" onClick={()=>valid&&onStart(names.filter(n=>n.trim()),rounds,stake)} style={{
-          width:"100%",padding:"16px",borderRadius:14,border:`1.5px solid ${valid?C.gold:"rgba(255,255,255,.06)"}`,
-          color:valid?C.gold:C.mutedD,fontSize:18,fontWeight:800,cursor:valid?"pointer":"not-allowed",
+          width:"100%",padding:"16px",borderRadius:14,
+          border:`1.5px solid ${valid?"var(--border-strong)":"var(--border-subtle)"}`,
+          color:valid?"var(--gold-1)":"var(--text-3)",fontSize:18,fontWeight:800,cursor:valid?"pointer":"not-allowed",
           fontFamily:"'Playfair Display',serif",letterSpacing:.5,
-          boxShadow:valid?`0 6px 28px ${C.gold}28`:"none",transition:"box-shadow .2s"
+          boxShadow:valid?"var(--shadow-gold)":"none",transition:"box-shadow .2s",minHeight:52
         }}>Continue →</button>
       </Panel>
     </div>
