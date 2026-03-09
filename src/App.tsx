@@ -470,20 +470,21 @@ function Leaderboard({ players, scores }) {
             animationDelay:`${i*60}ms`
           }}>
             <div style={{
-              width:30,height:30,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
-              background:i===0?`linear-gradient(135deg,${C.gold},${C.goldD})`:i===1?"linear-gradient(135deg,#8a9a9a,#5a6a6a)":i===2?"linear-gradient(135deg,#a0724a,#6a4a2a)":"rgba(255,255,255,.07)",
-              color:i<3?C.dark:C.muted, fontSize:11, fontWeight:800,
-              boxShadow:i===0?`0 2px 10px ${C.gold}55`:undefined
+              fontSize: i <= 2 ? 22 : 15,
+              fontWeight: 700,
+              fontFamily: i <= 2 ? "'Playfair Display',serif" : "system-ui",
+              color: i <= 2 ? "var(--gold-2)" : "var(--text-3)",
+              width: 32, textAlign:"center", flexShrink:0
             }}>{i+1}</div>
             <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0,opacity:.85}}/>
             <div style={{flex:1}}>
-              <div style={{color:C.cream,fontSize:15,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-              <div style={{height:3,borderRadius:2,background:"rgba(255,255,255,.06)",marginTop:5,overflow:"hidden"}}>
+              <div style={{color:"var(--text-1)",fontSize:15,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
+              <div style={{height:6,borderRadius:2,background:"rgba(255,255,255,.06)",marginTop:5,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${(p.score/maxScore)*100}%`,background:`linear-gradient(to right,${pc}99,${pc})`,transition:"width .6s ease"}}/>
               </div>
             </div>
-            <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:20,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-              {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
+            <div style={{color:"var(--text-1)",fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
+              {p.score}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
             </div>
           </div>
         );
