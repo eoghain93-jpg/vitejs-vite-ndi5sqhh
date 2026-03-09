@@ -95,6 +95,8 @@ const CSS = `
   }
   .btn-primary:hover{box-shadow:var(--shadow-gold)!important;filter:brightness(1.12);}
   .btn-primary:active{filter:brightness(0.95);}
+  .suit-grid{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+  @media(min-width:768px){.suit-grid{flex-wrap:nowrap;gap:24px;}}
 `;
 
 // ─── FELT BG ──────────────────────────────────────────────────────────────────
@@ -118,7 +120,7 @@ function Felt({ children, center, style={} }) {
 // ─── PLAYING CARD ─────────────────────────────────────────────────────────────
 function Card({ suit, size="md", glow, rotate=0, style={} }) {
   if (!suit) return null;
-  const S = {sm:{w:36,h:50,fs:20,pip:9,rank:11},md:{w:54,h:74,fs:30,pip:11,rank:14},lg:{w:72,h:98,fs:40,pip:13,rank:17}};
+  const S = {sm:{w:36,h:50,fs:20,pip:9,rank:11},md:{w:54,h:74,fs:30,pip:11,rank:14},lg:{w:96,h:128,fs:52,pip:15,rank:20}};
   const s = S[size];
   const col = SUIT_COLOR[suit], bg = SUIT_BG[suit];
   return (
@@ -423,7 +425,7 @@ function TrumpPicker({ onPick, onBack=null }) {
       <p style={{color:C.muted,fontSize:16,fontStyle:"italic",marginBottom:32,fontFamily:"'EB Garamond',serif"}}>
         Flip the top card — what's the trump suit?
       </p>
-      <div style={{display:"flex",gap:18,justifyContent:"center",flexWrap:"wrap"}}>
+      <div className="suit-grid">
         {SUITS.map(suit=>(
           <button key={suit} className="suit-card press" onClick={()=>setPending(suit)} style={{
             width:78,height:104,borderRadius:12,
@@ -431,7 +433,9 @@ function TrumpPicker({ onPick, onBack=null }) {
             border:"1.5px solid rgba(0,0,0,.12)", cursor:"pointer",
             display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:3,
             boxShadow:"0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.95)",
-            transition:"transform .18s,box-shadow .18s", position:"relative",overflow:"hidden"
+            transition:`all var(--dur-mid) var(--ease-spring)`, position:"relative",overflow:"hidden",
+            opacity: pending && pending !== suit ? 0.4 : 1,
+            transform: pending === suit ? "scale(1.06)" : pending ? "scale(0.96)" : undefined,
           }}>
             <div style={{position:"absolute",inset:0,background:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")`,pointerEvents:"none"}}/>
             <div style={{position:"absolute",top:5,left:6,textAlign:"center",lineHeight:1}}>
