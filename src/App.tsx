@@ -552,7 +552,7 @@ function TrumpPicker({ onPick, onBack=null }) {
         ))}
       </div>
       {onBack&&(
-        <button onClick={onBack} style={{marginTop:24,background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:14,fontFamily:"'EB Garamond',serif",fontStyle:"italic",textDecoration:"underline"}}>← Re-spin for dealer</button>
+        <button onClick={onBack} style={{marginTop:24,background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:14,fontFamily:"'EB Garamond',serif",fontStyle:"italic",textDecoration:"underline",minHeight:44,padding:"0 8px",display:"inline-flex",alignItems:"center"}}>← Re-spin for dealer</button>
       )}
     </div>
   );
@@ -699,7 +699,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
             <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
               style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
             {names.length>2&&(
-              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={{width:34,height:34,background:"rgba(192,57,43,.12)",border:"1px solid rgba(192,57,43,.25)",borderRadius:8,color:"#e07060",cursor:"pointer",fontSize:19,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
+              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={{width:44,height:44,background:"rgba(192,57,43,.12)",border:"1px solid rgba(192,57,43,.25)",borderRadius:8,color:"#e07060",cursor:"pointer",fontSize:19,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>×</button>
             )}
           </div>
         ))}
@@ -1078,7 +1078,7 @@ export default function App() {
                 ["history", <ClipboardIcon size={14}/>],
               ]).map(([t,ic])=>(
                 <button key={t} className="tab-pill press" onClick={()=>setTab(t)} style={{
-                  padding:"6px 11px",fontSize:12,borderRadius:9,cursor:"pointer",
+                  padding:"10px 14px",fontSize:12,borderRadius:9,cursor:"pointer",minHeight:44,display:"flex",alignItems:"center",gap:5,
                   background:tab===t?"rgba(201,168,76,.14)":"rgba(0,0,0,.3)",
                   border:`1px solid ${tab===t?C.gold:"rgba(255,255,255,.1)"}`,
                   color:tab===t?C.gold:C.muted,transition:"all .15s"
@@ -1115,7 +1115,7 @@ export default function App() {
                     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
                       <span style={{color:active?C.gold:done?C.green:C.mutedD,fontSize:9,fontWeight:700,letterSpacing:.5}}>{ordinal}</span>
                       <div style={{
-                        padding:"4px 13px",borderRadius:20,fontSize:12,transition:"all .2s",
+                        padding:"10px 13px",borderRadius:20,fontSize:12,transition:"all .2s",minHeight:44,display:"flex",alignItems:"center",
                         background:active?"rgba(201,168,76,.2)":done?"rgba(26,107,60,.22)":"rgba(255,255,255,.04)",
                         border:`1px solid ${active?C.gold:done?C.green+"88":"rgba(255,255,255,.08)"}`,
                         color:active?C.gold:done?"#7ac47a":C.mutedD,fontWeight:active?700:400,
@@ -1184,7 +1184,7 @@ export default function App() {
                     <div style={{color:"var(--text-1)",fontSize:14,fontFamily:"'Playfair Display',serif"}}>{players[pi]}</div>
                     <div style={{color:"var(--text-2)",fontSize:12}}>Called <strong style={{color:"var(--gold-2)"}}>{noms[pi]}</strong></div>
                   </div>
-                  <button onClick={()=>changeNom(pi)} style={{padding:"5px 14px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,color:"var(--text-2)",cursor:"pointer",fontSize:12}}>Edit</button>
+                  <button onClick={()=>changeNom(pi)} style={{padding:"10px 14px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,color:"var(--text-2)",cursor:"pointer",fontSize:12,minHeight:44}}>Edit</button>
                 </div>
               ))}
             </div>
