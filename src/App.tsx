@@ -75,11 +75,11 @@ const CSS = `
   @keyframes rankIn   {from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
   @keyframes pending-pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
-  .fade-up    {animation:fadeUp .32s ease both;}
-  .pop-in     {animation:popIn  .22s cubic-bezier(.34,1.56,.64,1) both;}
-  .glow-txt   {animation:glow 3s ease-in-out infinite;}
-  .ripple-btn {animation:ripple 1.8s ease-out infinite;}
-  .slide-in   {animation:slideIn .28s ease both;}
+  .fade-up    {animation:fadeUp var(--dur-mid) var(--ease-out) both;}
+  .pop-in     {animation:popIn  var(--dur-mid) var(--ease-spring) both;}
+  .glow-txt   {animation:glow 2s var(--ease-smooth) infinite;}
+  .ripple-btn {animation:ripple 1.5s var(--ease-out) infinite;}
+  .slide-in   {animation:slideIn var(--dur-mid) var(--ease-out) both;}
 
   .nom-chip:hover:not(:disabled){transform:scale(1.1)!important;background:var(--bg-raised)!important;border-color:var(--border-strong)!important;box-shadow:var(--shadow-gold)!important;}
   .nom-chip:active:not(:disabled){transform:scale(0.94)!important;}
@@ -97,6 +97,15 @@ const CSS = `
   .btn-primary:active{filter:brightness(0.95);}
   .suit-grid{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
   @media(min-width:768px){.suit-grid{flex-wrap:nowrap;gap:24px;}}
+
+  /* ── iPad layout ── */
+  @media(min-width:768px){
+    :root{
+      --t-display-size: 36px;
+    }
+    .spin-canvas{width:480px!important;height:480px!important;}
+    .max-game-width{max-width:600px!important;}
+  }
 `;
 
 // ─── FELT BG ──────────────────────────────────────────────────────────────────
@@ -1092,7 +1101,7 @@ export default function App() {
   return(
     <Felt style={{paddingBottom:60}}><style>{CSS}</style>
       <Hdr/>
-      <div style={{maxWidth:600,margin:"0 auto",padding:"0 18px"}}>
+      <div className="max-game-width" style={{maxWidth:600,margin:"0 auto",padding:"0 18px"}}>
         {tab==="table"  &&<Leaderboard players={players} scores={scores}/>}
         {tab==="history"&&<RoundHistory history={history} players={players}/>}
         {tab==="game"&&(
