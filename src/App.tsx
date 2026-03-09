@@ -207,14 +207,25 @@ function Lbl({ children, style={} }) {
 // ─── PROGRESS ─────────────────────────────────────────────────────────────────
 function Progress({ round, total }) {
   return (
-    <div style={{display:"flex",gap:3,marginBottom:16}}>
-      {Array.from({length:total},(_,i)=>(
-        <div key={i} style={{
-          flex:1, height:3, borderRadius:2,
-          background:i<round?`linear-gradient(to right,${C.gold},${C.goldL})`:i===round?`linear-gradient(to right,${C.green},#2a8a4a)`:"rgba(255,255,255,.08)",
-          transition:"background .4s"
-        }}/>
-      ))}
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <span style={{color:"var(--text-3)",fontSize:12,fontFamily:"system-ui",letterSpacing:"0.05em",textTransform:"uppercase"}}>Round</span>
+        <span style={{color:"var(--text-2)",fontSize:12,fontFamily:"system-ui",fontVariantNumeric:"tabular-nums"}}>{round+1} of {total}</span>
+      </div>
+      <div style={{display:"flex",gap:3,marginBottom:16}}>
+        {Array.from({length:total},(_,i)=>(
+          <div key={i} style={{
+            flex:1, height:8, borderRadius:4,
+            background:i<round
+              ?`linear-gradient(to right,var(--gold-3),var(--gold-2))`
+              :i===round
+              ?`linear-gradient(to right,var(--gold-2),var(--gold-1))`
+              :"var(--bg-raised)",
+            boxShadow:i===round?"var(--shadow-gold)":"none",
+            transition:"background var(--dur-mid)"
+          }}/>
+        ))}
+      </div>
     </div>
   );
 }
