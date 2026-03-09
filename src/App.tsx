@@ -569,8 +569,8 @@ function Podium({ sorted }) {
   if(sorted.length<1)return null;
   // reorder to 2nd, 1st, 3rd for visual podium
   const order=sorted.length>=3?[sorted[1],sorted[0],sorted[2]]:sorted.length===2?[sorted[1],sorted[0]]:sorted;
-  const heights=["64px","88px","48px"];
-  const medalColors=[`linear-gradient(135deg,#8a9a9a,#5a6a6a)`,`linear-gradient(135deg,${C.gold},${C.goldD})`,`linear-gradient(135deg,#a0724a,#6a4a2a)`];
+  const heights=["88px","64px","48px"];
+  const medalColors=[`linear-gradient(135deg,${C.gold},${C.goldD})`,`linear-gradient(135deg,#8a9a9a,#5a6a6a)`,`linear-gradient(135deg,#a0724a,#6a4a2a)`];
   const positions=sorted.length>=3?[1,0,2]:[1,0];
   return (
     <div style={{display:"flex",justifyContent:"center",alignItems:"flex-end",gap:8,marginBottom:24}}>
