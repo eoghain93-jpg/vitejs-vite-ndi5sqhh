@@ -119,6 +119,47 @@ const STYLES = {
     backBtn:       { marginTop:12, background:"none", border:"none", cursor:"pointer", fontSize:14, fontFamily:"system-ui", fontStyle:"italic", textDecoration:"underline", minHeight:44, padding:"0 8px", display:"inline-flex", alignItems:"center" },
   },
 
+  // ── Nominate screen ───────────────────────────────────────────────────────────
+  nominate: {
+    orderPanel:    { marginBottom:14, padding:"12px 16px" },
+    orderStrip:    { display:"flex", gap:6, flexWrap:"wrap" },
+    ordinal:       { fontSize:9, fontWeight:700, letterSpacing:.5 },
+    callerPanel:   { marginBottom:14 },
+    callerTop:     { display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:18 },
+    callerRight:   { textAlign:"right" },
+    callerCount:   { fontSize:12 },
+    callerTricks:  { fontSize:19, fontWeight:700, fontFamily:"'Playfair Display',serif" },
+    chipsWrap:     { display:"flex", flexWrap:"wrap", gap:8, justifyContent:"center" },
+    bustWarning:   { fontSize:12, marginTop:14, background:"rgba(192,57,43,.1)", borderRadius:8, padding:"8px 14px", border:"1px solid rgba(192,57,43,.22)" },
+    doneRow:       { display:"flex", alignItems:"center", justifyContent:"space-between", background:"rgba(255,255,255,.03)", borderRadius:12, padding:"11px 16px", border:"1px solid rgba(255,255,255,.07)" },
+    donePlayerName:{ fontSize:14, fontFamily:"'Playfair Display',serif" },
+    doneCalledLbl: { fontSize:12 },
+    editBtn:       { padding:"10px 14px", minHeight:44, background:"rgba(255,255,255,.05)", border:"1px solid rgba(255,255,255,.12)", borderRadius:8, cursor:"pointer", fontSize:12 },
+  },
+
+  // ── Play screen ───────────────────────────────────────────────────────────────
+  play: {
+    bustBanner:  { borderRadius:10, padding:"12px 16px", marginBottom:12, display:"flex", justifyContent:"space-between", alignItems:"center", transition:`border-color var(--dur-mid), background var(--dur-mid)` },
+    bustLeft:    { fontSize:13, fontFamily:"system-ui" },
+    bustRight:   { fontSize:13, fontWeight:700, fontFamily:"system-ui" },
+    cardsWrap:   { display:"flex", flexDirection:"column", gap:9, marginBottom:14 },
+    cardInner:   { borderRadius:16, padding:"14px 16px 14px 14px", position:"relative", overflow:"hidden" },
+    cardTop:     { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 },
+    cardName:    { color:"var(--text-1)", fontSize:16, fontWeight:600, fontFamily:"'Playfair Display',serif" },
+    cardScore:   { fontSize:18, fontWeight:700, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    cardPts:     { fontSize:11, marginLeft:2 },
+    cardRight:   { textAlign:"right" },
+    cardLbl:     { color:"var(--text-3)", fontSize:9, letterSpacing:1.5, textTransform:"uppercase", fontFamily:"system-ui" },
+    cardNom:     { color:"var(--text-1)", fontSize:32, fontWeight:900, fontFamily:"'Playfair Display',serif", lineHeight:1, fontVariantNumeric:"tabular-nums" },
+    hitBtns:     { display:"flex", gap:8 },
+    hitBtnBase:  { flex:1, padding:"14px 0", borderRadius:10, minHeight:48, fontWeight:400, cursor:"pointer", fontSize:14, transition:`all var(--dur-fast)`, fontFamily:"system-ui" },
+    undoRow:     { display:"flex", gap:10, marginBottom:10 },
+    endRoundBtn: { flex:1, padding:"16px", borderRadius:14, fontSize:17, fontWeight:800, cursor:"pointer", fontFamily:"'Playfair Display',serif", letterSpacing:.3 },
+    confirmTitle:{ fontSize:16, fontWeight:700, marginBottom:6, fontFamily:"'Playfair Display',serif" },
+    confirmSub:  { fontSize:13, marginBottom:16, fontStyle:"italic" },
+    confirmBtns: { display:"flex", gap:10 },
+  },
+
 } as const;
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
@@ -372,7 +413,7 @@ function Divider({ style={} }) {
 }
 
 // ─── PANEL ────────────────────────────────────────────────────────────────────
-function Panel({ children, accent, table=false, style={} }) {
+function Panel({ children, accent=false, table=false, style={}, className="" }) {
   const bg = table
     ? `linear-gradient(158deg, #0f4d26 0%, #0b3d1e 100%), ${feltTex}`
     : "var(--bg-surface)";
@@ -382,7 +423,7 @@ function Panel({ children, accent, table=false, style={} }) {
     ? "1px solid var(--border-mid)"
     : "1px solid var(--border-subtle)";
   return (
-    <div style={{...STYLES.panel.base, background:bg, border, ...style}}>{children}</div>
+    <div className={className||undefined} style={{...STYLES.panel.base, background:bg, border, ...style}}>{children}</div>
   );
 }
 
@@ -1174,16 +1215,16 @@ export default function App() {
         <Hdr/>
         <div style={{maxWidth:600,margin:"0 auto",padding:"0 18px"}}>
           {/* Order strip */}
-          <Panel style={{marginBottom:14,padding:"12px 16px"}}>
+          <Panel accent={undefined} style={STYLES.nominate.orderPanel}>
             <Lbl style={{marginBottom:10}}>Nomination order</Lbl>
-            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            <div style={STYLES.nominate.orderStrip}>
               {order.map((pi,pos)=>{
                 const done=noms[pi]!==null, active=pi===nomIdx;
                 const ordinal=["1st","2nd","3rd"][pos]||(pos+1)+"th";
                 return(
                   <div key={pi} style={{display:"flex",alignItems:"center",gap:4}}>
                     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
-                      <span style={{color:active?C.gold:done?C.green:C.mutedD,fontSize:9,fontWeight:700,letterSpacing:.5}}>{ordinal}</span>
+                      <span style={{...STYLES.nominate.ordinal,color:active?C.gold:done?C.green:C.mutedD}}>{ordinal}</span>
                       <div style={{
                         padding:"10px 13px",borderRadius:20,fontSize:12,transition:"all .2s",minHeight:44,display:"flex",alignItems:"center",
                         background:active?"rgba(201,168,76,.2)":done?"rgba(26,107,60,.22)":"rgba(255,255,255,.04)",
@@ -1200,8 +1241,8 @@ export default function App() {
           </Panel>
 
           {/* Active caller */}
-          <Panel accent style={{marginBottom:14}} className="pop-in">
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18}}>
+          <Panel accent style={STYLES.nominate.callerPanel} className="pop-in">
+            <div style={STYLES.nominate.callerTop}>
               <div>
                 <Lbl style={{marginBottom:6}}>
                   {isDealer?"Dealer's call":"Your call"}
@@ -1209,13 +1250,13 @@ export default function App() {
                 </Lbl>
                 <div style={{color:"var(--text-1)",fontSize:28,fontWeight:700,fontFamily:"'Playfair Display',serif",lineHeight:1.1}}>{players[nomIdx]}</div>
               </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{color:"var(--text-2)",fontSize:12}}>{doneCount} of {players.length} called</div>
-                <div style={{color:"var(--text-1)",fontSize:19,fontWeight:700,fontFamily:"'Playfair Display',serif"}}>{roundCards} tricks</div>
+              <div style={STYLES.nominate.callerRight}>
+                <div style={{...STYLES.nominate.callerCount,color:"var(--text-3)"}}>{doneCount} of {players.length} called</div>
+                <div style={{...STYLES.nominate.callerTricks,color:"var(--gold-2)"}}>{roundCards} tricks</div>
               </div>
             </div>
             <Lbl style={{marginBottom:12}}>How many tricks will you win?</Lbl>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"center"}}>
+            <div style={STYLES.nominate.chipsWrap}>
               {Array.from({length:roundCards+1},(_,i)=>{
                 const bad=busted.includes(i);
                 return(
@@ -1239,7 +1280,7 @@ export default function App() {
               })}
             </div>
             {isDealer&&busted.length>0&&(
-              <div style={{color:C.redL,fontSize:12,marginTop:14,background:"rgba(192,57,43,.1)",borderRadius:8,padding:"8px 14px",border:"1px solid rgba(192,57,43,.22)"}}>
+              <div style={{...STYLES.nominate.bustWarning,color:"var(--red-neg)"}}>
                 ⚠ You can't call {busted[0]} — that would make the total equal the tricks available
               </div>
             )}
@@ -1249,12 +1290,12 @@ export default function App() {
           {noms.some(n=>n!==null)&&(
             <div style={{display:"flex",flexDirection:"column",gap:7}}>
               {order.filter(pi=>noms[pi]!==null).map(pi=>(
-                <div key={pi} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(255,255,255,.03)",borderRadius:12,padding:"11px 16px",border:"1px solid rgba(255,255,255,.07)"}}>
+                <div key={pi} style={STYLES.nominate.doneRow}>
                   <div>
-                    <div style={{color:"var(--text-1)",fontSize:14,fontFamily:"'Playfair Display',serif"}}>{players[pi]}</div>
-                    <div style={{color:"var(--text-2)",fontSize:12}}>Called <strong style={{color:"var(--gold-2)"}}>{noms[pi]}</strong></div>
+                    <div style={{...STYLES.nominate.donePlayerName,color:"var(--text-1)"}}>{players[pi]}</div>
+                    <div style={{...STYLES.nominate.doneCalledLbl,color:"var(--text-3)"}}>Called <strong style={{color:"var(--gold-2)"}}>{noms[pi]}</strong></div>
                   </div>
-                  <button onClick={()=>changeNom(pi)} style={{padding:"10px 14px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,color:"var(--text-2)",cursor:"pointer",fontSize:12,minHeight:44}}>Edit</button>
+                  <button onClick={()=>changeNom(pi)} style={{...STYLES.nominate.editBtn,color:"var(--text-2)"}}>Edit</button>
                 </div>
               ))}
             </div>
@@ -1277,34 +1318,31 @@ export default function App() {
           <>
             {/* Bust banner */}
             <div style={{
+              ...STYLES.play.bustBanner,
               background: nomDiff===0 ? "rgba(239,68,68,.1)" : "var(--bg-raised)",
               border: `1px solid ${nomDiff===0 ? "var(--red-neg)" : "var(--border-subtle)"}`,
-              borderRadius:10, padding:"12px 16px", marginBottom:12,
-              display:"flex",justifyContent:"space-between",alignItems:"center",
-              transition:`border-color var(--dur-mid), background var(--dur-mid)`,
             }}>
-              <div style={{color:"var(--text-1)",fontSize:13,fontFamily:"system-ui"}}>
+              <div style={{...STYLES.play.bustLeft,color:"var(--text-2)"}}>
                 Nominated: <strong style={{color:"var(--gold-2)",fontVariantNumeric:"tabular-nums"}}>{tNom}</strong> / {roundCards}
               </div>
-              <div style={{color:nomDiff===0?"var(--red-neg)":nomDiff>0?"var(--gold-2)":"var(--green-pos)",fontSize:13,fontWeight:700,fontFamily:"system-ui"}}>
+              <div style={{...STYLES.play.bustRight,color:nomDiff===0?"var(--red-neg)":nomDiff>0?"var(--gold-2)":"var(--green-pos)"}}>
                 {nomDiff===0?"⚠ Bust round!":nomDiff>0?`+${nomDiff} over`:`${Math.abs(nomDiff)} under`}
               </div>
             </div>
 
             {/* Player hit/miss cards */}
-            <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:14}}>
+            <div style={STYLES.play.cardsWrap}>
               {players.map((name,i)=>{
                 const nom=noms[i],hit=hits[i],isDealer=i===dealerIdx;
                 const pc=PLAYER_COLORS[i%PLAYER_COLORS.length];
                 const accentColor=hit===true?C.green:hit===false?C.red:pc+"99";
                 return(
                   <div key={name} className="fade-up" style={{
+                    ...STYLES.play.cardInner,
                     background:`linear-gradient(155deg,${pc}0d,var(--bg-surface) 40%)`,
                     border:`1px solid ${pc}33`,
                     borderLeft:`4px solid ${accentColor}`,
-                    borderRadius:16,padding:"14px 16px 14px 14px",position:"relative",overflow:"hidden",
                     boxShadow:isDealer?`0 0 0 1.5px ${C.gold}66, 0 4px 24px rgba(0,0,0,.5)`:"0 2px 12px rgba(0,0,0,.4)",
-                    transition:"border-color .25s,box-shadow .25s"
                   }}>
                     {/* top glow tint */}
                     {hit===true&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 0%,${C.green}0a,transparent 65%)`,pointerEvents:"none"}}/>}
@@ -1326,30 +1364,29 @@ export default function App() {
                         textTransform:"uppercase"
                       }}>Dealer</div>
                     )}
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                    <div style={STYLES.play.cardTop}>
                       <div>
-                        <div style={{color:"var(--text-1)",fontSize:16,fontWeight:600,fontFamily:"'Playfair Display',serif"}}>{name}</div>
-                        <div style={{color:"var(--gold-2)",fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-                          {scores[i]}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
+                        <div style={STYLES.play.cardName}>{name}</div>
+                        <div style={{...STYLES.play.cardScore,color:"var(--gold-2)"}}>
+                          {scores[i]}<span style={{...STYLES.play.cardPts,color:"var(--text-3)"}}>pts</span>
                         </div>
                       </div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{color:"var(--text-3)",fontSize:9,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"system-ui"}}>Called</div>
-                        <div style={{color:"var(--text-1)",fontSize:32,fontWeight:900,fontFamily:"'Playfair Display',serif",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{nom}</div>
+                      <div style={STYLES.play.cardRight}>
+                        <div style={STYLES.play.cardLbl}>Called</div>
+                        <div style={STYLES.play.cardNom}>{nom}</div>
                       </div>
                     </div>
-                    <div style={{display:"flex",gap:8}}>
+                    <div style={STYLES.play.hitBtns}>
                       {[
                         {val:true, label:"✓  Hit", pts:`+${10+nom}`, activeC:C.gold,  activeBg:"rgba(26,107,60,.2)",    activeBd:C.green},
                         {val:false,label:"✗  Miss",pts:"+0",          activeC:"#e07060",activeBg:"rgba(192,57,43,.18)", activeBd:C.red},
                       ].map(({val,label,pts,activeC,activeBg,activeBd})=>(
                         <button key={String(val)} className="press" onClick={()=>toggleHit(i,val)} style={{
-                          flex:1,padding:"14px 0",borderRadius:10,minHeight:48,
+                          ...STYLES.play.hitBtnBase,
                           border:`1.5px solid ${hit===val?activeBd:"rgba(255,255,255,.08)"}`,
                           background:hit===val?activeBg:"rgba(255,255,255,.03)",
                           color:hit===val?activeC:"var(--text-3)",
-                          fontWeight:hit===val?700:400,cursor:"pointer",fontSize:14,
-                          transition:`all var(--dur-fast)`,fontFamily:"system-ui"
+                          fontWeight:hit===val?700:400,
                         }}>
                           {label} <span style={{fontSize:12,opacity:.75,fontVariantNumeric:"tabular-nums"}}>{pts}pts</span>
                         </button>
@@ -1361,14 +1398,13 @@ export default function App() {
             </div>
 
             {/* Undo + End */}
-            <div style={{display:"flex",gap:10,marginBottom:10}}>
+            <div style={STYLES.play.undoRow}>
               {anyHit&&<Btn v="ghost" sm onClick={undoHit}>↩ Undo</Btn>}
               {allResolved()&&!confirmEnd&&(
                 <button className="press btn-primary" onClick={()=>setConfirmEnd(true)} style={{
-                  flex:1,padding:"16px",borderRadius:14,
-                  border:`1.5px solid ${C.gold}`,color:C.gold,fontSize:17,fontWeight:800,
-                  cursor:"pointer",fontFamily:"'Playfair Display',serif",letterSpacing:.3,
-                  boxShadow:`0 6px 28px ${C.gold}28`
+                  ...STYLES.play.endRoundBtn,
+                  border:`1.5px solid ${C.gold}`,color:C.gold,
+                  boxShadow:`0 6px 28px ${C.gold}28`,
                 }}>{round+1>=totalRounds?"See Final Results →":`End Round ${round+1} →`}</button>
               )}
             </div>
@@ -1376,9 +1412,9 @@ export default function App() {
             {/* Confirm */}
             {confirmEnd&&(
               <Panel accent style={{marginTop:8}} className="pop-in">
-                <div style={{color:C.cream,fontSize:16,fontWeight:700,marginBottom:6,fontFamily:"'Playfair Display',serif"}}>End round {round+1}?</div>
-                <div style={{color:C.muted,fontSize:13,marginBottom:16,fontStyle:"italic",fontFamily:"'EB Garamond',serif"}}>Make sure everyone's result is correct before confirming.</div>
-                <div style={{display:"flex",gap:10}}>
+                <div style={STYLES.play.confirmTitle}>End round {round+1}?</div>
+                <div style={{...STYLES.play.confirmSub,color:"var(--text-2)"}}>Make sure everyone's result is correct before confirming.</div>
+                <div style={STYLES.play.confirmBtns}>
                   <Btn v="ghost" full onClick={()=>setConfirmEnd(false)}>Cancel</Btn>
                   <Btn v="gold" full onClick={endRound}>{round+1>=totalRounds?"Final Results →":"Confirm →"}</Btn>
                 </div>
