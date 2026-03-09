@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  
+  <!-- Back card (slightly rotated) -->
+  <g transform="translate(256, 240) rotate(-8)">
+    <rect x="-72" y="-100" width="144" height="200" rx="10" fill="#2a2a4a" stroke="#3a3a6a" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Front card -->
+  <g transform="translate(256, 230) rotate(5)">
+    <rect x="-72" y="-100" width="144" height="200" rx="10" fill="#f0ede6"/>
+    
+    <!-- "A" top left -->
+    <text x="-52" y="-68" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#1a1a2e">A</text>
+    
+    <!-- Small spade top left -->
+    <g transform="translate(-44, -62) scale(0.45)">
+      <path d="M0,-20 C0,-20 18,2 18,12 C18,19 11,22 0,13 C-11,22 -18,19 -18,12 C-18,2 0,-20 0,-20Z" fill="#1a1a2e"/>
+    </g>
+    
+    <!-- Large center spade -->
+    <g transform="translate(0, 4)">
+      <path d="M0,-32 C0,-32 26,2 26,15 C26,24 16,28 0,16 C-16,28 -26,24 -26,15 C-26,2 0,-32 0,-32Z" fill="#1a1a2e"/>
+      <rect x="-3.5" y="12" width="7" height="16" rx="1.5" fill="#1a1a2e"/>
+    </g>
+    
+    <!-- "A" bottom right (inverted) -->
+    <g transform="rotate(180)">
+      <text x="-52" y="-68" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#1a1a2e">A</text>
+      <g transform="translate(-44, -62) scale(0.45)">
+        <path d="M0,-20 C0,-20 18,2 18,12 C18,19 11,22 0,13 C-11,22 -18,19 -18,12 C-18,2 0,-20 0,-20Z" fill="#1a1a2e"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- App name -->
+  <text x="256" y="420" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="bold" fill="#e8e4dc" letter-spacing="4">NOMMIES</text>
+  
+</svg>
