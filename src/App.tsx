@@ -883,6 +883,9 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
   const filled=names.map((n:string)=>n.trim()).filter(Boolean);
   const hasDupes=filled.length!==new Set(filled).size;
   const valid=filled.length>=2&&!hasDupes;
+  const maxRounds=filled.length>=2?Math.min(10,Math.floor(52/filled.length)):10;
+  const roundOpts=[5,7,10,13].filter(r=>r<=maxRounds);
+  if(rounds>maxRounds)setRounds(maxRounds);
 
   return (
     <div style={STYLES.setup.wrap} className="fade-up">
@@ -914,7 +917,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
         <Divider/>
         <Lbl style={{marginBottom:10}}>Rounds</Lbl>
         <div style={{display:"flex",gap:8,marginBottom:20}}>
-          {[5,7,10,13].map(r=>(
+          {roundOpts.map(r=>(
             <button key={r} onClick={()=>setRounds(r)} className="press" style={{
               flex:1,padding:"12px 0",borderRadius:10,
               border:`1.5px solid ${rounds===r?"var(--border-strong)":"var(--border-subtle)"}`,
