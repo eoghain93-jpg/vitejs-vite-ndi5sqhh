@@ -421,6 +421,9 @@ const CSS = `
     .spin-canvas{width:480px!important;height:480px!important;}
     .max-game-width{max-width:600px!important;}
   }
+  @media(prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+  }
 `;
 
 // ─── FELT BG ──────────────────────────────────────────────────────────────────
