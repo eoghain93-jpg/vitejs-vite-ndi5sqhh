@@ -13,7 +13,6 @@ const SUITS = ["♠","♥","♦","♣"];
 const SUIT_NAME  = {"♠":"Spades","♥":"Hearts","♦":"Diamonds","♣":"Clubs"};
 const SUIT_COLOR = {"♠":"#1a1a2e","♥":C.red,"♦":C.red,"♣":"#1a1a2e"};
 const SUIT_BG    = {"♠":"#eaecf4","♥":"#fce8e8","♦":"#fce8e8","♣":"#eaecf4"};
-const SUIT_RANK  = {"♠":"A","♥":"A","♦":"A","♣":"A"};
 const WHEEL_HUE  = ["#1a6b3c","#b8943c","#2c5f8a","#7a3060","#4a7a30","#7a4a20","#325078","#5a3a10"];
 const PLAYER_COLORS = ["#c9a84c","#5ba3e8","#e85b8a","#5bca8a","#e87a4a","#9b6be8","#4bcece","#d4c04a"];
 
@@ -39,6 +38,7 @@ const CSS = `
   @keyframes confetti {0%{transform:translateY(-16px) rotate(0deg);opacity:1}100%{transform:translateY(108vh) rotate(580deg);opacity:0}}
   @keyframes podiumRise{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
   @keyframes rankIn   {from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes pending-pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
   .fade-up    {animation:fadeUp .32s ease both;}
   .pop-in     {animation:popIn  .22s cubic-bezier(.34,1.56,.64,1) both;}
@@ -102,12 +102,12 @@ function Card({ suit, size="md", glow, rotate=0, style={} }) {
       <div style={{position:"absolute",inset:0,background:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='80' height='80' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,pointerEvents:"none"}} />
       {/* Top-left pip */}
       <div style={{position:"absolute",top:3,left:4,lineHeight:1,textAlign:"center"}}>
-        <div style={{color:col,fontSize:s.rank,fontWeight:800,fontFamily:"'Playfair Display',serif",lineHeight:1}}>{SUIT_RANK[suit]}</div>
+        <div style={{color:col,fontSize:s.rank,fontWeight:800,fontFamily:"'Playfair Display',serif",lineHeight:1}}>A</div>
         <div style={{color:col,fontSize:s.pip,lineHeight:1}}>{suit}</div>
       </div>
       {/* Bottom-right pip (rotated) */}
       <div style={{position:"absolute",bottom:3,right:4,lineHeight:1,textAlign:"center",transform:"rotate(180deg)"}}>
-        <div style={{color:col,fontSize:s.rank,fontWeight:800,fontFamily:"'Playfair Display',serif",lineHeight:1}}>{SUIT_RANK[suit]}</div>
+        <div style={{color:col,fontSize:s.rank,fontWeight:800,fontFamily:"'Playfair Display',serif",lineHeight:1}}>A</div>
         <div style={{color:col,fontSize:s.pip,lineHeight:1}}>{suit}</div>
       </div>
       {/* Centre suit */}
@@ -177,7 +177,7 @@ function Progress({ round, total }) {
 }
 
 // ─── BTN ──────────────────────────────────────────────────────────────────────
-function Btn({ children, onClick, disabled, v="def", full, sm, ripple }) {
+function Btn({ children, onClick, disabled=false, v="def", full=false, sm=false, ripple=false }) {
   const base = {
     padding:sm?"9px 18px":"14px 28px", borderRadius:14, fontWeight:700,
     cursor:disabled?"not-allowed":"pointer", fontFamily:"'Playfair Display',serif",
@@ -299,7 +299,7 @@ function SpinWheel({ players, onDone }) {
   return (
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:28}}>
       <div className={spinning?"spin-glow":""} style={{borderRadius:"50%"}}>
-        <canvas ref={canvasRef} width={310} height={310} style={{display:"block"}}/>
+        <canvas ref={canvasRef} width={310} height={310} style={{display:"block",maxWidth:"calc(100vw - 80px)",height:"auto"}}/>
       </div>
       {result ? (
         <div className="pop-in" style={{textAlign:"center"}}>
@@ -317,15 +317,52 @@ function SpinWheel({ players, onDone }) {
 }
 
 // ─── TRUMP PICKER ─────────────────────────────────────────────────────────────
-function TrumpPicker({ onPick }) {
+function TrumpPicker({ onPick, onBack=null }) {
+  const [pending, setPending] = useState(null);
+
+  if (pending) {
+    return (
+      <div style={{textAlign:"center"}} className="pop-in">
+        <p style={{color:C.muted,fontSize:16,fontStyle:"italic",marginBottom:20,fontFamily:"'EB Garamond',serif"}}>
+          Confirm trump suit?
+        </p>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:28}}>
+          <div style={{
+            width:100,height:136,borderRadius:14,
+            background:`linear-gradient(148deg,#ffffff,${SUIT_BG[pending]})`,
+            border:`2.5px solid ${C.gold}`,
+            display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:4,
+            boxShadow:`0 0 0 4px ${C.gold}33, 0 12px 36px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.95)`,
+            position:"relative",overflow:"hidden"
+          }}>
+            <div style={{position:"absolute",top:6,left:7,textAlign:"center",lineHeight:1}}>
+              <div style={{color:SUIT_COLOR[pending],fontSize:17,fontWeight:800,fontFamily:"'Playfair Display',serif"}}>A</div>
+              <div style={{color:SUIT_COLOR[pending],fontSize:12}}>{pending}</div>
+            </div>
+            <div style={{position:"absolute",bottom:6,right:7,textAlign:"center",lineHeight:1,transform:"rotate(180deg)"}}>
+              <div style={{color:SUIT_COLOR[pending],fontSize:17,fontWeight:800,fontFamily:"'Playfair Display',serif"}}>A</div>
+              <div style={{color:SUIT_COLOR[pending],fontSize:12}}>{pending}</div>
+            </div>
+            <span style={{fontSize:48,color:SUIT_COLOR[pending],lineHeight:1}}>{pending}</span>
+            <span style={{fontSize:11,color:SUIT_COLOR[pending],fontWeight:700,letterSpacing:1,textTransform:"uppercase"}}>{SUIT_NAME[pending]}</span>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:12,justifyContent:"center"}}>
+          <Btn v="ghost" onClick={()=>setPending(null)}>← Change</Btn>
+          <Btn v="gold" onClick={()=>onPick(pending)}>Confirm {SUIT_NAME[pending]} →</Btn>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{textAlign:"center"}}>
       <p style={{color:C.muted,fontSize:16,fontStyle:"italic",marginBottom:32,fontFamily:"'EB Garamond',serif"}}>
         Flip the top card — what's the trump suit?
       </p>
-      <div style={{display:"flex",gap:18,justifyContent:"center"}}>
+      <div style={{display:"flex",gap:18,justifyContent:"center",flexWrap:"wrap"}}>
         {SUITS.map(suit=>(
-          <button key={suit} className="suit-card press" onClick={()=>onPick(suit)} style={{
+          <button key={suit} className="suit-card press" onClick={()=>setPending(suit)} style={{
             width:78,height:104,borderRadius:12,
             background:`linear-gradient(148deg,#ffffff,${SUIT_BG[suit]})`,
             border:"1.5px solid rgba(0,0,0,.12)", cursor:"pointer",
@@ -333,14 +370,11 @@ function TrumpPicker({ onPick }) {
             boxShadow:"0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.95)",
             transition:"transform .18s,box-shadow .18s", position:"relative",overflow:"hidden"
           }}>
-            {/* paper grain overlay */}
             <div style={{position:"absolute",inset:0,background:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")`,pointerEvents:"none"}}/>
-            {/* top-left rank */}
             <div style={{position:"absolute",top:5,left:6,textAlign:"center",lineHeight:1}}>
               <div style={{color:SUIT_COLOR[suit],fontSize:15,fontWeight:800,fontFamily:"'Playfair Display',serif"}}>A</div>
               <div style={{color:SUIT_COLOR[suit],fontSize:11}}>{suit}</div>
             </div>
-            {/* bottom-right (inverted) */}
             <div style={{position:"absolute",bottom:5,right:6,textAlign:"center",lineHeight:1,transform:"rotate(180deg)"}}>
               <div style={{color:SUIT_COLOR[suit],fontSize:15,fontWeight:800,fontFamily:"'Playfair Display',serif"}}>A</div>
               <div style={{color:SUIT_COLOR[suit],fontSize:11}}>{suit}</div>
@@ -350,6 +384,9 @@ function TrumpPicker({ onPick }) {
           </button>
         ))}
       </div>
+      {onBack&&(
+        <button onClick={onBack} style={{marginTop:24,background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:14,fontFamily:"'EB Garamond',serif",fontStyle:"italic",textDecoration:"underline"}}>← Re-spin for dealer</button>
+      )}
     </div>
   );
 }
@@ -472,8 +509,10 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
   const [names,setNames]=useState(initNames||["","","","",""]);
   const [rounds,setRounds]=useState(initRounds||10);
   const [stake,setStake]=useState(initStake||5);
-  const setN=(i,v)=>setNames(n=>n.map((x,j)=>j===i?v:x));
-  const valid=names.filter(n=>n.trim()).length>=2;
+  const setN=(i,v)=>setNames(n=>n.map((x,j)=>j===i?v.slice(0,20):x));
+  const filled=names.map((n:string)=>n.trim()).filter(Boolean);
+  const hasDupes=filled.length!==new Set(filled).size;
+  const valid=filled.length>=2&&!hasDupes;
 
   return (
     <div style={{width:"100%",maxWidth:460}} className="fade-up">
@@ -498,6 +537,9 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
         ))}
         {names.length<8&&(
           <button onClick={()=>setNames(n=>[...n,""])} style={{width:"100%",padding:"10px",background:"rgba(26,107,60,.1)",border:"1px dashed rgba(26,107,60,.4)",borderRadius:10,color:C.muted,cursor:"pointer",fontSize:13,marginTop:4}}>＋ Add Player</button>
+        )}
+        {hasDupes&&(
+          <div style={{color:C.redL,fontSize:12,marginTop:8,padding:"7px 12px",background:"rgba(192,57,43,.1)",borderRadius:8,border:"1px solid rgba(192,57,43,.22)"}}>⚠ Player names must be unique</div>
         )}
         <Divider/>
         <Lbl style={{marginBottom:10}}>Rounds</Lbl>
@@ -664,6 +706,7 @@ export default function App() {
   const [prevScores,setPrevScores]=useState([]);
   const [tab,setTab]=useState("game");
   const [confirmEnd,setConfirmEnd]=useState(false);
+  const [confirmPlayAgain,setConfirmPlayAgain]=useState(false);
 
   const roundCards=getRoundCards(round,totalRounds);
 
@@ -769,7 +812,7 @@ export default function App() {
             ))}
           </div>
         </Panel>
-        <TrumpPicker onPick={pickTrump}/>
+        <TrumpPicker onPick={pickTrump} onBack={round===0?()=>setPhase("spin"):null}/>
       </div>
     </Felt>
   );
@@ -813,10 +856,21 @@ export default function App() {
           </Panel>
           <Money players={players} scores={scores} stake={stakePerPoint}/>
           <Divider/>
-          <div style={{display:"flex",gap:12}}>
-            <Btn v="ghost" full onClick={()=>{setScores(Array(players.length).fill(0));setHistory([]);setPhase("spin");}}>Play Again</Btn>
-            <Btn v="gold" full onClick={()=>setPhase("setup")}>New Game</Btn>
-          </div>
+          {confirmPlayAgain?(
+            <Panel accent>
+              <div style={{color:C.cream,fontSize:16,fontWeight:700,marginBottom:6,fontFamily:"'Playfair Display',serif"}}>Play again with same players?</div>
+              <div style={{color:C.muted,fontSize:13,marginBottom:16,fontStyle:"italic"}}>Scores will reset to zero.</div>
+              <div style={{display:"flex",gap:10}}>
+                <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(false)}>Cancel</Btn>
+                <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("spin");}}>Confirm →</Btn>
+              </div>
+            </Panel>
+          ):(
+            <div style={{display:"flex",gap:12}}>
+              <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(true)}>Play Again</Btn>
+              <Btn v="gold" full onClick={()=>setPhase("setup")}>New Game</Btn>
+            </div>
+          )}
         </div>
       </Felt>
     );
@@ -870,16 +924,20 @@ export default function App() {
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
               {order.map((pi,pos)=>{
                 const done=noms[pi]!==null, active=pi===nomIdx;
+                const ordinal=["1st","2nd","3rd"][pos]||(pos+1)+"th";
                 return(
                   <div key={pi} style={{display:"flex",alignItems:"center",gap:4}}>
-                    <div style={{
-                      padding:"4px 13px",borderRadius:20,fontSize:12,transition:"all .2s",
-                      background:active?"rgba(201,168,76,.2)":done?"rgba(26,107,60,.22)":"rgba(255,255,255,.04)",
-                      border:`1px solid ${active?C.gold:done?C.green+"88":"rgba(255,255,255,.08)"}`,
-                      color:active?C.gold:done?"#7ac47a":C.mutedD,fontWeight:active?700:400,
-                      boxShadow:active?`0 0 12px ${C.gold}22`:"none"
-                    }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx?" 🂡":""}</div>
-                    {pos<order.length-1&&<span style={{color:"#2a3a2a",fontSize:12}}>›</span>}
+                    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1}}>
+                      <span style={{color:active?C.gold:done?C.green:C.mutedD,fontSize:9,fontWeight:700,letterSpacing:.5}}>{ordinal}</span>
+                      <div style={{
+                        padding:"4px 13px",borderRadius:20,fontSize:12,transition:"all .2s",
+                        background:active?"rgba(201,168,76,.2)":done?"rgba(26,107,60,.22)":"rgba(255,255,255,.04)",
+                        border:`1px solid ${active?C.gold:done?C.green+"88":"rgba(255,255,255,.08)"}`,
+                        color:active?C.gold:done?"#7ac47a":C.mutedD,fontWeight:active?700:400,
+                        boxShadow:active?`0 0 12px ${C.gold}22`:"none"
+                      }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx?" 🂡":""}</div>
+                    </div>
+                    {pos<order.length-1&&<span style={{color:"#2a3a2a",fontSize:12,marginTop:12}}>›</span>}
                   </div>
                 );
               })}
@@ -892,7 +950,7 @@ export default function App() {
               <div>
                 <Lbl style={{marginBottom:6}}>
                   {isDealer?"Dealer's call":"Your call"}
-                  {isDealer&&<span style={{color:C.redL,marginLeft:8,fontSize:10}}>· bust rule applies</span>}
+                  {isDealer&&<span style={{color:C.redL,marginLeft:8,fontSize:10}}>· total can't equal {roundCards}</span>}
                 </Lbl>
                 <div style={{color:C.cream,fontSize:28,fontWeight:700,fontFamily:"'Playfair Display',serif",lineHeight:1.1}}>{players[nomIdx]}</div>
               </div>
@@ -993,6 +1051,7 @@ export default function App() {
                     {/* top glow tint */}
                     {hit===true&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 0%,${C.green}0a,transparent 65%)`,pointerEvents:"none"}}/>}
                     {hit===false&&<div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,rgba(192,57,43,.08),transparent 65%)",pointerEvents:"none"}}/>}
+                    {hit===null&&<div style={{position:"absolute",top:8,right:isDealer?60:12,fontSize:9,fontWeight:800,letterSpacing:1.5,color:pc,textTransform:"uppercase",animation:"pending-pulse 1.8s ease-in-out infinite"}}>● Pending</div>}
 
                     {isDealer&&(
                       <div style={{position:"absolute",top:0,right:0,
