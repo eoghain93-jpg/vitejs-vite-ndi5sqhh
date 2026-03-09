@@ -1106,8 +1106,8 @@ export default function App() {
                 const accentColor=hit===true?C.green:hit===false?C.red:pc+"99";
                 return(
                   <div key={name} className="fade-up" style={{
-                    background:"linear-gradient(155deg,rgba(24,38,26,.96),rgba(14,24,16,.98))",
-                    border:`1px solid rgba(255,255,255,.07)`,
+                    background:`linear-gradient(155deg,${pc}0d,var(--bg-surface) 40%)`,
+                    border:`1px solid ${pc}33`,
                     borderLeft:`4px solid ${accentColor}`,
                     borderRadius:16,padding:"14px 16px 14px 14px",position:"relative",overflow:"hidden",
                     boxShadow:isDealer?`0 0 0 1.5px ${C.gold}66, 0 4px 24px rgba(0,0,0,.5)`:"0 2px 12px rgba(0,0,0,.4)",
@@ -1116,13 +1116,22 @@ export default function App() {
                     {/* top glow tint */}
                     {hit===true&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 0%,${C.green}0a,transparent 65%)`,pointerEvents:"none"}}/>}
                     {hit===false&&<div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,rgba(192,57,43,.08),transparent 65%)",pointerEvents:"none"}}/>}
-                    {hit===null&&<div style={{position:"absolute",top:8,right:isDealer?60:12,fontSize:9,fontWeight:800,letterSpacing:1.5,color:pc,textTransform:"uppercase",animation:"pending-pulse 1.8s ease-in-out infinite"}}>● Pending</div>}
+                    {hit===null&&<div style={{
+                      position:"absolute",top:0,left:0,bottom:0,width:4,
+                      borderRadius:"16px 0 0 16px",
+                      background:pc,
+                      animation:"pending-pulse 1.8s ease-in-out infinite"
+                    }}/>}
 
                     {isDealer&&(
-                      <div style={{position:"absolute",top:0,right:0,
-                        background:`linear-gradient(135deg,${C.gold},${C.goldD})`,
-                        color:C.dark,fontSize:9,fontWeight:800,padding:"3px 12px 3px 18px",
-                        borderBottomLeftRadius:10,letterSpacing:1.5}}>DEALER</div>
+                      <div style={{
+                        position:"absolute",top:10,right:12,
+                        background:`linear-gradient(135deg,var(--gold-2),var(--gold-3))`,
+                        color:"var(--bg-base)",fontSize:10,fontWeight:800,
+                        padding:"3px 10px",borderRadius:20,letterSpacing:"0.1em",
+                        boxShadow:"var(--shadow-gold)",fontFamily:"system-ui",
+                        textTransform:"uppercase"
+                      }}>Dealer</div>
                     )}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                       <div>
@@ -1142,12 +1151,12 @@ export default function App() {
                         {val:false,label:"✗  Miss",pts:"+0",          activeC:"#e07060",activeBg:"rgba(192,57,43,.18)", activeBd:C.red},
                       ].map(({val,label,pts,activeC,activeBg,activeBd})=>(
                         <button key={String(val)} className="press" onClick={()=>toggleHit(i,val)} style={{
-                          flex:1,padding:"11px 0",borderRadius:10,
+                          flex:1,padding:"14px 0",borderRadius:10,minHeight:48,
                           border:`1.5px solid ${hit===val?activeBd:"rgba(255,255,255,.08)"}`,
                           background:hit===val?activeBg:"rgba(255,255,255,.03)",
-                          color:hit===val?activeC:C.mutedD,
+                          color:hit===val?activeC:"var(--text-3)",
                           fontWeight:hit===val?700:400,cursor:"pointer",fontSize:14,
-                          transition:"all .18s",fontFamily:"'EB Garamond',serif"
+                          transition:`all var(--dur-fast)`,fontFamily:"system-ui"
                         }}>
                           {label} <span style={{fontSize:12,opacity:.75,fontVariantNumeric:"tabular-nums"}}>{pts}pts</span>
                         </button>
