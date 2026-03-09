@@ -26,6 +26,63 @@ const fmtMoney = p => { if(!p)return"0p"; const l=Math.floor(p/100),r=p%100; ret
 const fmtStake = p => p>=100?`£${(p/100).toFixed(p%100===0?0:2)}`:`${p}p`;
 const getRoundCards = (ri,tot) => tot-ri;
 
+// ─── STYLES ───────────────────────────────────────────────────────────────────
+// Static style objects hoisted out of JSX render (React perf best practice).
+// Dynamic values (player color, hit state, active state) remain inline.
+const STYLES = {
+
+  // ── Layout ──────────────────────────────────────────────────────────────────
+  felt: {
+    base: {
+      minHeight:"100vh",
+      backgroundColor:"var(--bg-base)",
+      backgroundImage:`radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, var(--bg-base) 60%)`,
+      fontFamily:"system-ui,'Segoe UI',sans-serif",
+    },
+  },
+
+  divider: {
+    wrap:  { display:"flex", alignItems:"center", gap:10, margin:"18px 0" },
+    lineL: { flex:1, height:1, background:`linear-gradient(to right,transparent,var(--border-mid))` },
+    lineR: { flex:1, height:1, background:`linear-gradient(to left,transparent,var(--border-mid))` },
+    dot:   { color:"var(--gold-3)", fontSize:13, lineHeight:1 },
+  },
+
+  // ── Core components ──────────────────────────────────────────────────────────
+  panel: {
+    base: { borderRadius:16, padding:"20px 22px", boxShadow:"var(--shadow-2)" },
+  },
+
+  lbl: {
+    base: { color:"var(--gold-2)", fontSize:11, fontWeight:700, letterSpacing:2, textTransform:"uppercase" as const, fontFamily:"system-ui,'Segoe UI',sans-serif" },
+  },
+
+  progress: {
+    wrap:     { } as Record<string, never>,
+    header:   { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 },
+    label:    { color:"var(--text-3)", fontSize:12, fontFamily:"system-ui", letterSpacing:"0.05em", textTransform:"uppercase" as const },
+    roundNum: { color:"var(--text-2)", fontSize:12, fontFamily:"system-ui", fontVariantNumeric:"tabular-nums" as const },
+    track:    { display:"flex", gap:3, marginBottom:16 },
+  },
+
+  // ── Buttons ──────────────────────────────────────────────────────────────────
+  btn: {
+    base: {
+      borderRadius:10, fontWeight:700, cursor:"pointer" as const,
+      fontFamily:"system-ui,'Segoe UI',sans-serif", fontSize:15,
+      border:"1.5px solid", minHeight:48,
+      transition:`all var(--dur-fast) var(--ease-smooth)`,
+      letterSpacing:"0.06em", textTransform:"uppercase" as const,
+    },
+    disabled: { cursor:"not-allowed" as const, opacity:0.38 },
+    def:   { background:"var(--bg-raised)", borderColor:"var(--border-subtle)", color:"var(--text-1)" },
+    ghost: { background:"transparent", borderColor:"var(--border-mid)", color:"var(--text-2)" },
+    gold:  { borderColor:"var(--border-strong)", color:"var(--gold-1)" },
+    red:   { background:"rgba(239,68,68,.1)", borderColor:"rgba(239,68,68,.35)", color:"var(--red-neg)" },
+  },
+
+} as const;
+
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 // Lucide-style inline SVGs — no emoji, no external dependency
 type CSSProps = Record<string, string | number | undefined>;
@@ -206,12 +263,9 @@ const feltTex = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 function Felt({ children, center, style={} }) {
   return (
     <div style={{
-      minHeight:"100vh",
-      backgroundColor: "var(--bg-base)",
-      backgroundImage:`radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, var(--bg-base) 60%)`,
+      ...STYLES.felt.base,
       display:center?"flex":undefined, alignItems:center?"center":undefined,
       justifyContent:center?"center":undefined, padding:center?20:undefined,
-      fontFamily:"system-ui,'Segoe UI',sans-serif",
       ...style
     }}>{children}</div>
   );
@@ -271,10 +325,10 @@ function CardFan() {
 // ─── DIVIDER ──────────────────────────────────────────────────────────────────
 function Divider({ style={} }) {
   return (
-    <div style={{display:"flex",alignItems:"center",gap:10,margin:"18px 0",...style}}>
-      <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,var(--border-mid))`}}/>
-      <span style={{color:"var(--gold-3)",fontSize:13,lineHeight:1}}>✦</span>
-      <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,var(--border-mid))`}}/>
+    <div style={{...STYLES.divider.wrap,...style}}>
+      <div style={STYLES.divider.lineL}/>
+      <span style={STYLES.divider.dot}>✦</span>
+      <div style={STYLES.divider.lineR}/>
     </div>
   );
 }
@@ -290,31 +344,24 @@ function Panel({ children, accent, table=false, style={} }) {
     ? "1px solid var(--border-mid)"
     : "1px solid var(--border-subtle)";
   return (
-    <div style={{
-      background: bg,
-      borderRadius: 16,
-      padding: "20px 22px",
-      border,
-      boxShadow: "var(--shadow-2)",
-      ...style
-    }}>{children}</div>
+    <div style={{...STYLES.panel.base, background:bg, border, ...style}}>{children}</div>
   );
 }
 
 // ─── LABEL ────────────────────────────────────────────────────────────────────
 function Lbl({ children, style={} }) {
-  return <div style={{color:"var(--gold-2)",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",fontFamily:"system-ui,'Segoe UI',sans-serif",...style}}>{children}</div>;
+  return <div style={{...STYLES.lbl.base,...style}}>{children}</div>;
 }
 
 // ─── PROGRESS ─────────────────────────────────────────────────────────────────
 function Progress({ round, total }) {
   return (
-    <div>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-        <span style={{color:"var(--text-3)",fontSize:12,fontFamily:"system-ui",letterSpacing:"0.05em",textTransform:"uppercase"}}>Round</span>
-        <span style={{color:"var(--text-2)",fontSize:12,fontFamily:"system-ui",fontVariantNumeric:"tabular-nums"}}>{round+1} of {total}</span>
+    <div style={STYLES.progress.wrap}>
+      <div style={STYLES.progress.header}>
+        <span style={STYLES.progress.label}>Round</span>
+        <span style={STYLES.progress.roundNum}>{round+1} of {total}</span>
       </div>
-      <div style={{display:"flex",gap:3,marginBottom:16}}>
+      <div style={STYLES.progress.track}>
         {Array.from({length:total},(_,i)=>(
           <div key={i} style={{
             flex:1, height:8, borderRadius:4,
@@ -334,29 +381,19 @@ function Progress({ round, total }) {
 
 // ─── BTN ──────────────────────────────────────────────────────────────────────
 function Btn({ children, onClick, disabled=false, v="def", full=false, sm=false, ripple=false }) {
-  const base = {
-    padding: sm ? "10px 18px" : "14px 28px",
-    borderRadius: 10,
-    fontWeight: 700,
-    cursor: disabled ? "not-allowed" : "pointer",
-    fontFamily: "system-ui,'Segoe UI',sans-serif",
-    fontSize: sm ? 13 : 15,
-    border: "1.5px solid",
-    width: full ? "100%" : undefined,
-    minHeight: sm ? 40 : 48,
-    opacity: disabled ? 0.38 : 1,
-    transition: `all var(--dur-fast) var(--ease-smooth)`,
-    letterSpacing: "0.06em",
-    textTransform: "uppercase" as const,
-  };
-  const vs = {
-    def:   { background: "var(--bg-raised)", borderColor: "var(--border-subtle)", color: "var(--text-1)" },
-    ghost: { background: "transparent", borderColor: "var(--border-mid)", color: "var(--text-2)" },
-    gold:  { borderColor: "var(--border-strong)", color: "var(--gold-1)" },
-    red:   { background: "rgba(239,68,68,.1)", borderColor: "rgba(239,68,68,.35)", color: "var(--red-neg)" },
-  };
-  const cls = ["press", v === "gold" ? "btn-primary" : "", ripple && !disabled ? "ripple-btn" : ""].join(" ");
-  return <button className={cls} onClick={!disabled ? onClick : undefined} style={{...base,...vs[v]}}>{children}</button>;
+  const sizeOverride = sm ? { padding:"10px 18px", fontSize:13, minHeight:40 } : { padding:"14px 28px" };
+  const cls = ["press", v==="gold"?"btn-primary":"", ripple&&!disabled?"ripple-btn":""].join(" ");
+  return (
+    <button className={cls} onClick={!disabled?onClick:undefined} style={{
+      ...STYLES.btn.base,
+      ...STYLES.btn[v as keyof typeof STYLES.btn],
+      ...sizeOverride,
+      ...(disabled ? STYLES.btn.disabled : {}),
+      width:full?"100%":undefined,
+    }}>
+      {children}
+    </button>
+  );
 }
 
 // ─── SPIN WHEEL ───────────────────────────────────────────────────────────────
