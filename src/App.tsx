@@ -1023,23 +1023,25 @@ export default function App() {
               </div>
             </div>
             <Lbl style={{marginBottom:12}}>How many tricks will you win?</Lbl>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(62px,1fr))",gap:10}}>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"center"}}>
               {Array.from({length:roundCards+1},(_,i)=>{
                 const bad=busted.includes(i);
                 return(
                   <button key={i} className={bad?"":"nom-chip"} disabled={bad}
                     onClick={()=>!bad&&submitNom(nomIdx,i)} style={{
-                    height:62,borderRadius:14,
-                    border:`2px solid ${bad?"rgba(255,255,255,.05)":"rgba(26,107,60,.55)"}`,
-                    background:bad?"rgba(255,255,255,.02)":"rgba(26,107,60,.18)",
-                    color:bad?"#1e2e1e":C.cream,fontSize:22,fontWeight:700,
+                    width:60, height:60, borderRadius:12,
+                    border:`2px solid ${bad?"var(--border-subtle)":"var(--border-mid)"}`,
+                    background:bad?"rgba(255,255,255,.02)":"var(--bg-raised)",
+                    color:bad?"var(--text-3)":"var(--text-1)", fontSize:22, fontWeight:700,
                     cursor:bad?"not-allowed":"pointer",
                     textDecoration:bad?"line-through":"none",
-                    transition:"all .15s",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
-                    boxShadow:bad?"none":"0 4px 12px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08)"
+                    transition:`all var(--dur-fast)`,
+                    display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
+                    boxShadow:bad?"none":"var(--shadow-1)",
+                    fontFamily:"system-ui"
                   }}>
                     <span>{i}</span>
-                    {!bad&&<span style={{fontSize:9,color:C.muted,fontWeight:400}}>+{10+i}pts</span>}
+                    {!bad&&<span style={{fontSize:9,color:"var(--text-3)",fontWeight:400}}>+{10+i}pts</span>}
                   </button>
                 );
               })}
