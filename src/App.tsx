@@ -560,9 +560,9 @@ function Money({ players, scores, stake }) {
             display:"flex",justifyContent:"space-between",alignItems:"center",
             padding:"12px 0",borderBottom:i<sorted.length-2?"1px solid rgba(255,255,255,.055)":"none"
           }}>
-            <div style={{color:C.cream,fontSize:16,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
+            <div style={{color:"var(--text-1)",fontSize:16,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
             <div style={{textAlign:"right"}}>
-              <div style={{color:C.redL,fontWeight:700,fontSize:22,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{fmtMoney(diff*stake)}</div>
+              <div style={{color:"var(--red-neg)",fontWeight:700,fontSize:22,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{fmtMoney(diff*stake)}</div>
               <div style={{color:C.mutedD,fontSize:11}}>{diff} pts behind</div>
             </div>
           </div>
@@ -652,8 +652,8 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
         <div style={{textAlign:"center",marginBottom:24}}>
           <Card suit={trump} size="lg" glow style={{margin:"0 auto"}}/>
           <Lbl style={{textAlign:"center",marginTop:16,marginBottom:8}}>Round {round+1} Complete</Lbl>
-          <h2 style={{color:C.cream,fontFamily:"'Playfair Display',serif",fontSize:30,fontWeight:900,marginBottom:4}}>Round Summary</h2>
-          <div style={{color:C.muted,fontSize:15,fontStyle:"italic"}}>{SUIT_NAME[trump]} was trump</div>
+          <h2 style={{color:"var(--text-1)",fontFamily:"'Playfair Display',serif",fontSize:30,fontWeight:900,marginBottom:4}}>Round Summary</h2>
+          <div style={{color:"var(--text-2)",fontSize:15,fontStyle:"italic"}}>{SUIT_NAME[trump]} was trump</div>
         </div>
         <Panel>
           {players.map((name,i)=>{
@@ -662,24 +662,25 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
             const posB=rankBefore.indexOf(name),posA=rankAfter.indexOf(name),delta=posB-posA;
             return (
               <div key={name} className="slide-in" style={{
-                display:"flex",alignItems:"center",gap:12,padding:"13px 0",
-                borderBottom:i<players.length-1?"1px solid rgba(255,255,255,.055)":"none",
+                display:"flex",alignItems:"center",gap:12,padding:"13px 12px",
+                borderRadius:8,marginBottom:4,
+                background:hit?"rgba(34,197,94,.08)":"rgba(239,68,68,.08)",
+                borderLeft:hit?"3px solid var(--green-pos)":"3px solid var(--red-neg)",
                 animationDelay:`${i*70}ms`
               }}>
-                <div style={{width:4,alignSelf:"stretch",borderRadius:2,background:pc,flexShrink:0}}/>
                 <div style={{fontSize:22,width:28,textAlign:"center",flexShrink:0}}>{hit?"✅":"❌"}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{color:C.cream,fontWeight:600,fontSize:15,fontFamily:"'Playfair Display',serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name}</div>
-                  <div style={{color:C.muted,fontSize:12,marginTop:1}}>Called <strong style={{color:pc}}>{nom}</strong> · {hit?"Hit!":"Missed"}</div>
+                  <div style={{color:"var(--text-1)",fontWeight:600,fontSize:15,fontFamily:"'Playfair Display',serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name}</div>
+                  <div style={{color:"var(--text-2)",fontSize:12,marginTop:1}}>Called <strong style={{color:pc}}>{nom}</strong> · {hit?"Hit!":"Missed"}</div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{color:hit?C.gold:C.redL,fontWeight:700,fontSize:19,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>+{gained}pts</div>
-                  <div style={{color:C.mutedD,fontSize:11}}>{prevScores[i]} → <span style={{color:C.cream}}>{scores[i]}</span></div>
+                  <div style={{color:hit?"var(--green-pos)":"var(--red-neg)",fontWeight:700,fontSize:19,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>+{gained}pts</div>
+                  <div style={{color:"var(--text-3)",fontSize:11}}>{prevScores[i]} → <span style={{color:"var(--text-1)"}}>{scores[i]}</span></div>
                 </div>
                 {players.length>1&&(
                   <div className="rank-in" style={{
                     fontSize:11,fontWeight:700,minWidth:28,textAlign:"center",flexShrink:0,
-                    color:delta>0?"#5bca8a":delta<0?C.redL:C.mutedD,
+                    color:delta>0?"var(--green-pos)":delta<0?"var(--red-neg)":"var(--text-3)",
                     animation:"rankIn .35s ease both",animationDelay:`${i*70+200}ms`
                   }}>
                     {delta>0?`↑${delta}`:delta<0?`↓${Math.abs(delta)}`:"–"}
@@ -723,7 +724,7 @@ function Podium({ sorted }) {
   if(sorted.length<1)return null;
   const order=sorted.length>=3?[sorted[1],sorted[0],sorted[2]]:sorted.length===2?[sorted[1],sorted[0]]:sorted;
   const heights=["88px","64px","48px"];
-  const medalColors=[`linear-gradient(160deg,${C.gold},${C.goldD})`,`linear-gradient(160deg,#9aacac,#5a6a6a)`,`linear-gradient(160deg,#b0824a,#6a4a2a)`];
+  const medalColors=["var(--bg-table)","var(--bg-table)","var(--bg-table)"];
   const positions=sorted.length>=3?[1,0,2]:[1,0];
   return (
     <div style={{display:"flex",justifyContent:"center",alignItems:"flex-end",gap:6,marginBottom:28}}>
@@ -746,6 +747,7 @@ function Podium({ sorted }) {
               width:"100%", height:`${h}px`,
               background:medalColors[rank],
               borderRadius:"10px 10px 0 0",
+              border:"1px solid var(--border-mid)",
               display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:10,
               fontSize:rank===0?24:18,
               boxShadow:rank===0?`0 -6px 24px ${C.gold}55`:`0 -2px 10px rgba(0,0,0,.3)`,
