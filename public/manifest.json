@@ -1,0 +1,22 @@
+{
+  "name": "Nominations",
+  "short_name": "Nommies",
+  "description": "The trick-taking scoring companion",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1a0f",
+  "theme_color": "#0d1a0f",
+  "icons": [
+    {
+      "src": "/nommies-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/nommies-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
