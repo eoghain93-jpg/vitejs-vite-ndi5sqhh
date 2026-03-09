@@ -15,6 +15,7 @@ const SUIT_COLOR = {"♠":"#1a1a2e","♥":C.red,"♦":C.red,"♣":"#1a1a2e"};
 const SUIT_BG    = {"♠":"#eaecf4","♥":"#fce8e8","♦":"#fce8e8","♣":"#eaecf4"};
 const SUIT_RANK  = {"♠":"A","♥":"A","♦":"A","♣":"A"};
 const WHEEL_HUE  = ["#1a6b3c","#b8943c","#2c5f8a","#7a3060","#4a7a30","#7a4a20","#325078","#5a3a10"];
+const PLAYER_COLORS = ["#c9a84c","#5ba3e8","#e85b8a","#5bca8a","#e87a4a","#9b6be8","#4bcece","#d4c04a"];
 
 const fmtMoney = p => { if(!p)return"0p"; const l=Math.floor(p/100),r=p%100; return l>0?`£${l}.${r.toString().padStart(2,"0")}`:`${p}p`; };
 const fmtStake = p => p>=100?`£${(p/100).toFixed(p%100===0?0:2)}`:`${p}p`;
@@ -35,6 +36,9 @@ const CSS = `
   @keyframes glow     {0%,100%{text-shadow:0 0 8px #c9a84c33}50%{text-shadow:0 0 28px #c9a84caa}}
   @keyframes spin-glow{0%,100%{box-shadow:0 0 0 3px #c9a84c33,0 12px 40px #00000088}50%{box-shadow:0 0 0 3px #c9a84c99,0 12px 40px #00000088}}
   @keyframes slideIn  {from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+  @keyframes confetti {0%{transform:translateY(-16px) rotate(0deg);opacity:1}100%{transform:translateY(108vh) rotate(580deg);opacity:0}}
+  @keyframes podiumRise{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+  @keyframes rankIn   {from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
 
   .fade-up    {animation:fadeUp .32s ease both;}
   .pop-in     {animation:popIn  .22s cubic-bezier(.34,1.56,.64,1) both;}
@@ -352,34 +356,38 @@ function TrumpPicker({ onPick }) {
 
 // ─── LEADERBOARD ──────────────────────────────────────────────────────────────
 function Leaderboard({ players, scores }) {
-  const sorted=[...players].map((p,i)=>({name:p,score:scores[i]})).sort((a,b)=>b.score-a.score);
+  const sorted=[...players].map((p,i)=>({name:p,score:scores[i],idx:i})).sort((a,b)=>b.score-a.score);
   const maxScore=sorted[0]?.score||1;
   return (
     <Panel>
       <Lbl style={{marginBottom:16}}>🏆 Standings</Lbl>
-      {sorted.map((p,i)=>(
-        <div key={p.name} className="slide-in" style={{
-          display:"flex",alignItems:"center",gap:12,padding:"11px 0",
-          borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none"
-        }}>
-          <div style={{
-            width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
-            background:i===0?`linear-gradient(135deg,${C.gold},${C.goldD})`:i===1?"linear-gradient(135deg,#8a9a9a,#5a6a6a)":i===2?"linear-gradient(135deg,#a0724a,#6a4a2a)":"rgba(255,255,255,.07)",
-            color:i<3?C.dark:C.muted, fontSize:11, fontWeight:800,
-            boxShadow:i===0?`0 2px 10px ${C.gold}55`:undefined
-          }}>{i+1}</div>
-          <div style={{flex:1}}>
-            <div style={{color:C.cream,fontSize:15,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-            {/* mini score bar */}
-            <div style={{height:2,borderRadius:1,background:"rgba(255,255,255,.06)",marginTop:4,overflow:"hidden"}}>
-              <div style={{height:"100%",width:`${(p.score/maxScore)*100}%`,background:i===0?`linear-gradient(to right,${C.gold},${C.goldL})`:`linear-gradient(to right,${C.green},#3a9a5a)`,transition:"width .5s ease"}}/>
+      {sorted.map((p,i)=>{
+        const pc=PLAYER_COLORS[p.idx%PLAYER_COLORS.length];
+        return(
+          <div key={p.name} className="slide-in" style={{
+            display:"flex",alignItems:"center",gap:12,padding:"11px 0",
+            borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none",
+            animationDelay:`${i*60}ms`
+          }}>
+            <div style={{
+              width:30,height:30,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
+              background:i===0?`linear-gradient(135deg,${C.gold},${C.goldD})`:i===1?"linear-gradient(135deg,#8a9a9a,#5a6a6a)":i===2?"linear-gradient(135deg,#a0724a,#6a4a2a)":"rgba(255,255,255,.07)",
+              color:i<3?C.dark:C.muted, fontSize:11, fontWeight:800,
+              boxShadow:i===0?`0 2px 10px ${C.gold}55`:undefined
+            }}>{i+1}</div>
+            <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0,opacity:.85}}/>
+            <div style={{flex:1}}>
+              <div style={{color:C.cream,fontSize:15,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
+              <div style={{height:3,borderRadius:2,background:"rgba(255,255,255,.06)",marginTop:5,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${(p.score/maxScore)*100}%`,background:`linear-gradient(to right,${pc}99,${pc})`,transition:"width .6s ease"}}/>
+              </div>
+            </div>
+            <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:20,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
+              {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
             </div>
           </div>
-          <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:20,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-            {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </Panel>
   );
 }
@@ -525,10 +533,12 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
 
 // ─── ROUND SUMMARY ────────────────────────────────────────────────────────────
 function RoundSummary({ players, nominations, hits, scores, prevScores, round, trump, onNext, isLast }) {
+  const rankBefore=[...players].map((p,i)=>({name:p,score:prevScores[i]})).sort((a,b)=>b.score-a.score).map(p=>p.name);
+  const rankAfter=[...players].map((p,i)=>({name:p,score:scores[i]})).sort((a,b)=>b.score-a.score).map(p=>p.name);
   return (
     <Felt center>
       <div style={{width:"100%",maxWidth:500}} className="fade-up">
-        <div style={{textAlign:"center",marginBottom:28}}>
+        <div style={{textAlign:"center",marginBottom:24}}>
           <Card suit={trump} size="lg" glow style={{margin:"0 auto"}}/>
           <Lbl style={{textAlign:"center",marginTop:16,marginBottom:8}}>Round {round+1} Complete</Lbl>
           <h2 style={{color:C.cream,fontFamily:"'Playfair Display',serif",fontSize:30,fontWeight:900,marginBottom:4}}>Round Summary</h2>
@@ -537,23 +547,33 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
         <Panel>
           {players.map((name,i)=>{
             const nom=nominations[i],hit=hits[i],gained=hit?10+nom:0;
+            const pc=PLAYER_COLORS[i%PLAYER_COLORS.length];
+            const posB=rankBefore.indexOf(name),posA=rankAfter.indexOf(name),delta=posB-posA;
             return (
               <div key={name} className="slide-in" style={{
-                display:"flex",alignItems:"center",gap:14,padding:"13px 10px 13px 0",
+                display:"flex",alignItems:"center",gap:12,padding:"13px 0",
                 borderBottom:i<players.length-1?"1px solid rgba(255,255,255,.055)":"none",
-                borderLeft:`4px solid ${hit?C.green:C.red}`,paddingLeft:14,marginLeft:-4,
-                background:hit?"rgba(26,107,60,.07)":"rgba(192,57,43,.05)",
-                borderRadius:"0 8px 8px 0",marginBottom:4
+                animationDelay:`${i*70}ms`
               }}>
-                <div style={{fontSize:24,width:30,textAlign:"center"}}>{hit?"✅":"❌"}</div>
-                <div style={{flex:1}}>
-                  <div style={{color:C.cream,fontWeight:600,fontSize:16,fontFamily:"'Playfair Display',serif"}}>{name}</div>
-                  <div style={{color:C.muted,fontSize:12}}>Called {nom} · {hit?"Hit!":"Missed"}</div>
+                <div style={{width:4,alignSelf:"stretch",borderRadius:2,background:pc,flexShrink:0}}/>
+                <div style={{fontSize:22,width:28,textAlign:"center",flexShrink:0}}>{hit?"✅":"❌"}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{color:C.cream,fontWeight:600,fontSize:15,fontFamily:"'Playfair Display',serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name}</div>
+                  <div style={{color:C.muted,fontSize:12,marginTop:1}}>Called <strong style={{color:pc}}>{nom}</strong> · {hit?"Hit!":"Missed"}</div>
                 </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{color:hit?C.gold:C.redL,fontWeight:700,fontSize:20,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>+{gained}pts</div>
-                  <div style={{color:C.mutedD,fontSize:11}}>{prevScores[i]} → {scores[i]}</div>
+                <div style={{textAlign:"right",flexShrink:0}}>
+                  <div style={{color:hit?C.gold:C.redL,fontWeight:700,fontSize:19,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>+{gained}pts</div>
+                  <div style={{color:C.mutedD,fontSize:11}}>{prevScores[i]} → <span style={{color:C.cream}}>{scores[i]}</span></div>
                 </div>
+                {players.length>1&&(
+                  <div className="rank-in" style={{
+                    fontSize:11,fontWeight:700,minWidth:28,textAlign:"center",flexShrink:0,
+                    color:delta>0?"#5bca8a":delta<0?C.redL:C.mutedD,
+                    animation:"rankIn .35s ease both",animationDelay:`${i*70+200}ms`
+                  }}>
+                    {delta>0?`↑${delta}`:delta<0?`↓${Math.abs(delta)}`:"–"}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -564,30 +584,62 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
   );
 }
 
+// ─── CONFETTI ─────────────────────────────────────────────────────────────────
+function Confetti() {
+  const pieces=Array.from({length:60},(_,i)=>({
+    x:`${Math.random()*100}%`,
+    delay:`${(Math.random()*2.4).toFixed(2)}s`,
+    dur:`${(1.9+Math.random()*1.8).toFixed(2)}s`,
+    bg:["#c9a84c","#e8c96a","#5ba3e8","#e85b8a","#5bca8a","#e87a4a","#9b6be8"][i%7],
+    size:`${5+Math.floor(Math.random()*9)}px`,
+    br:i%3<2?"3px":"50%",
+  }));
+  return(
+    <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:300,overflow:"hidden"}}>
+      {pieces.map((p,i)=>(
+        <div key={i} style={{
+          position:"absolute",top:-16,left:p.x,
+          width:p.size,height:p.size,background:p.bg,borderRadius:p.br,
+          animation:`confetti ${p.dur} ${p.delay} ease-in both`
+        }}/>
+      ))}
+    </div>
+  );
+}
+
 // ─── PODIUM ───────────────────────────────────────────────────────────────────
 function Podium({ sorted }) {
   if(sorted.length<1)return null;
-  // reorder to 2nd, 1st, 3rd for visual podium
   const order=sorted.length>=3?[sorted[1],sorted[0],sorted[2]]:sorted.length===2?[sorted[1],sorted[0]]:sorted;
   const heights=["88px","64px","48px"];
-  const medalColors=[`linear-gradient(135deg,${C.gold},${C.goldD})`,`linear-gradient(135deg,#8a9a9a,#5a6a6a)`,`linear-gradient(135deg,#a0724a,#6a4a2a)`];
+  const medalColors=[`linear-gradient(160deg,${C.gold},${C.goldD})`,`linear-gradient(160deg,#9aacac,#5a6a6a)`,`linear-gradient(160deg,#b0824a,#6a4a2a)`];
   const positions=sorted.length>=3?[1,0,2]:[1,0];
   return (
-    <div style={{display:"flex",justifyContent:"center",alignItems:"flex-end",gap:8,marginBottom:24}}>
+    <div style={{display:"flex",justifyContent:"center",alignItems:"flex-end",gap:6,marginBottom:28}}>
       {order.map((p,vi)=>{
         const rank=positions[vi];
         const h=parseInt(heights[rank]);
+        const pc=PLAYER_COLORS[(p.idx??rank)%PLAYER_COLORS.length];
         return (
-          <div key={p.name} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:8}}>
-            <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?16:14,fontFamily:"'Playfair Display',serif",fontWeight:rank===0?700:400,textAlign:"center",maxWidth:90,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</div>
-            <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?22:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span></div>
+          <div key={p.name} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,flex:1,maxWidth:120}}>
             <div style={{
-              width:rank===0?76:60, height:`${h}px`,
-              background:medalColors[rank],
-              borderRadius:"8px 8px 0 0",
-              display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:10,
-              fontSize:rank===0?28:22, boxShadow:rank===0?`0 -4px 20px ${C.gold}44`:"none"
+              width:36,height:36,borderRadius:"50%",
+              background:`linear-gradient(135deg,${pc}33,${pc}11)`,
+              border:`2px solid ${pc}66`,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:18,marginBottom:2
             }}>{["🥇","🥈","🥉"][rank]}</div>
+            <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?15:13,fontFamily:"'Playfair Display',serif",fontWeight:rank===0?700:500,textAlign:"center",width:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",padding:"0 4px"}}>{p.name}</div>
+            <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?20:16,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{p.score}<span style={{fontSize:10,color:C.muted,marginLeft:2}}>pts</span></div>
+            <div style={{
+              width:"100%", height:`${h}px`,
+              background:medalColors[rank],
+              borderRadius:"10px 10px 0 0",
+              display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:10,
+              fontSize:rank===0?24:18,
+              boxShadow:rank===0?`0 -6px 24px ${C.gold}55`:`0 -2px 10px rgba(0,0,0,.3)`,
+              animation:`podiumRise .5s ${rank===0?.05:rank===1?.15:.25}s cubic-bezier(.34,1.3,.64,1) both`
+            }}/>
           </div>
         );
       })}
@@ -732,27 +784,32 @@ export default function App() {
 
   // ── END ──
   if(phase==="end"){
-    const sorted=[...players].map((p,i)=>({name:p,score:scores[i]})).sort((a,b)=>b.score-a.score);
+    const sorted=[...players].map((p,i)=>({name:p,score:scores[i],idx:i})).sort((a,b)=>b.score-a.score);
     return(
       <Felt style={{paddingBottom:48}}><style>{CSS}</style>
+        <Confetti/>
         <div style={{maxWidth:500,margin:"0 auto",padding:"28px 20px",textAlign:"center"}} className="fade-up">
-          <Lbl style={{textAlign:"center",marginBottom:12}}>Game Over</Lbl>
-          <h1 style={{color:C.gold,fontSize:44,fontWeight:900,fontFamily:"'Playfair Display',serif",textShadow:`0 2px 28px ${C.gold}66`,marginBottom:8}}>Final Standings</h1>
+          <Lbl style={{textAlign:"center",marginBottom:10}}>Game Over</Lbl>
+          <h1 style={{color:C.gold,fontSize:44,fontWeight:900,fontFamily:"'Playfair Display',serif",textShadow:`0 2px 28px ${C.gold}66`,marginBottom:6}}>Final Standings</h1>
           <p style={{color:C.muted,fontStyle:"italic",marginBottom:28,fontSize:15}}>{totalRounds} rounds played</p>
           <Podium sorted={sorted}/>
           {/* Full list */}
           <Panel style={{marginBottom:0,textAlign:"left"}}>
-            {sorted.map((p,i)=>(
-              <div key={p.name} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 4px",borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none"}}>
-                <div style={{fontSize:i<3?22:14,width:30,textAlign:"center",color:i<3?"inherit":C.muted}}>
-                  {i<3?["🥇","🥈","🥉"][i]:i+1}
+            {sorted.map((p,i)=>{
+              const pc=PLAYER_COLORS[p.idx%PLAYER_COLORS.length];
+              return(
+                <div key={p.name} className="slide-in" style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none",animationDelay:`${i*60}ms`}}>
+                  <div style={{fontSize:i<3?22:14,width:30,textAlign:"center",color:i<3?"inherit":C.muted,flexShrink:0}}>
+                    {i<3?["🥇","🥈","🥉"][i]:i+1}
+                  </div>
+                  <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0}}/>
+                  <div style={{flex:1,color:C.cream,fontSize:17,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
+                  <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:21,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
+                    {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
+                  </div>
                 </div>
-                <div style={{flex:1,color:C.cream,fontSize:17,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-                <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:21,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-                  {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </Panel>
           <Money players={players} scores={scores} stake={stakePerPoint}/>
           <Divider/>
@@ -845,21 +902,24 @@ export default function App() {
               </div>
             </div>
             <Lbl style={{marginBottom:12}}>How many tricks will you win?</Lbl>
-            <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(62px,1fr))",gap:10}}>
               {Array.from({length:roundCards+1},(_,i)=>{
                 const bad=busted.includes(i);
                 return(
                   <button key={i} className={bad?"":"nom-chip"} disabled={bad}
                     onClick={()=>!bad&&submitNom(nomIdx,i)} style={{
-                    width:48,height:48,borderRadius:"50%",
-                    border:`2px solid ${bad?"rgba(255,255,255,.06)":"rgba(26,107,60,.55)"}`,
-                    background:bad?"rgba(255,255,255,.02)":"rgba(26,107,60,.2)",
-                    color:bad?"#1e2e1e":C.cream,fontSize:17,fontWeight:700,
+                    height:62,borderRadius:14,
+                    border:`2px solid ${bad?"rgba(255,255,255,.05)":"rgba(26,107,60,.55)"}`,
+                    background:bad?"rgba(255,255,255,.02)":"rgba(26,107,60,.18)",
+                    color:bad?"#1e2e1e":C.cream,fontSize:22,fontWeight:700,
                     cursor:bad?"not-allowed":"pointer",
                     textDecoration:bad?"line-through":"none",
-                    transition:"all .15s",
-                    boxShadow:bad?"none":"0 3px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08)"
-                  }}>{i}</button>
+                    transition:"all .15s",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,
+                    boxShadow:bad?"none":"0 4px 12px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08)"
+                  }}>
+                    <span>{i}</span>
+                    {!bad&&<span style={{fontSize:9,color:C.muted,fontWeight:400}}>+{10+i}pts</span>}
+                  </button>
                 );
               })}
             </div>
@@ -919,7 +979,8 @@ export default function App() {
             <div style={{display:"flex",flexDirection:"column",gap:9,marginBottom:14}}>
               {players.map((name,i)=>{
                 const nom=noms[i],hit=hits[i],isDealer=i===dealerIdx;
-                const accentColor=hit===true?C.green:hit===false?C.red:C.mutedD;
+                const pc=PLAYER_COLORS[i%PLAYER_COLORS.length];
+                const accentColor=hit===true?C.green:hit===false?C.red:pc+"99";
                 return(
                   <div key={name} className="fade-up" style={{
                     background:"linear-gradient(155deg,rgba(24,38,26,.96),rgba(14,24,16,.98))",
