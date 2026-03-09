@@ -106,11 +106,11 @@ function Felt({ children, center, style={} }) {
   return (
     <div style={{
       minHeight:"100vh",
-      backgroundColor: C.feltD,
-      backgroundImage:`radial-gradient(ellipse at 30% 20%, #204d2a 0%, ${C.feltM} 40%, ${C.felt} 68%, ${C.feltD} 100%), ${feltTex}`,
+      backgroundColor: "var(--bg-base)",
+      backgroundImage:`radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, var(--bg-base) 60%)`,
       display:center?"flex":undefined, alignItems:center?"center":undefined,
       justifyContent:center?"center":undefined, padding:center?20:undefined,
-      fontFamily:"'EB Garamond',Georgia,serif",
+      fontFamily:"system-ui,'Segoe UI',sans-serif",
       ...style
     }}>{children}</div>
   );
