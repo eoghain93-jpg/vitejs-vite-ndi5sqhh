@@ -1085,16 +1085,17 @@ export default function App() {
           <>
             {/* Bust banner */}
             <div style={{
-              background:nomDiff===0?"rgba(192,57,43,.12)":"rgba(0,0,0,.18)",
-              border:`1px solid ${nomDiff===0?"rgba(192,57,43,.4)":"rgba(255,255,255,.07)"}`,
-              borderRadius:10,padding:"10px 16px",marginBottom:12,
-              display:"flex",justifyContent:"space-between",alignItems:"center"
+              background: nomDiff===0 ? "rgba(239,68,68,.1)" : "var(--bg-raised)",
+              border: `1px solid ${nomDiff===0 ? "var(--red-neg)" : "var(--border-subtle)"}`,
+              borderRadius:10, padding:"12px 16px", marginBottom:12,
+              display:"flex",justifyContent:"space-between",alignItems:"center",
+              transition:`border-color var(--dur-mid), background var(--dur-mid)`,
             }}>
-              <div style={{color:C.cream,fontSize:13}}>
-                Nominated: <strong style={{color:C.gold,fontVariantNumeric:"tabular-nums"}}>{tNom}</strong> / {roundCards}
+              <div style={{color:"var(--text-1)",fontSize:13,fontFamily:"system-ui"}}>
+                Nominated: <strong style={{color:"var(--gold-2)",fontVariantNumeric:"tabular-nums"}}>{tNom}</strong> / {roundCards}
               </div>
-              <div style={{color:nomDiff===0?C.redL:nomDiff>0?C.gold:"#7ac47a",fontSize:12,fontWeight:700}}>
-                {nomDiff===0?"⚠ Bust round!":nomDiff>0?`${nomDiff} over`:`${Math.abs(nomDiff)} under`}
+              <div style={{color:nomDiff===0?"var(--red-neg)":nomDiff>0?"var(--gold-2)":"var(--green-pos)",fontSize:13,fontWeight:700,fontFamily:"system-ui"}}>
+                {nomDiff===0?"⚠ Bust round!":nomDiff>0?`+${nomDiff} over`:`${Math.abs(nomDiff)} under`}
               </div>
             </div>
 
