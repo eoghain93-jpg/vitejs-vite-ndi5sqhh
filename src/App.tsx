@@ -61,7 +61,7 @@ const CSS = `
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   body{background:var(--bg-base);}
   button,input{font-family:inherit;}
-  ::selection{background:#c9a84c33;}
+  ::selection{background:rgba(201,168,76,.2);}
 
   @keyframes fadeUp   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes popIn    {from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
@@ -511,7 +511,7 @@ function RoundHistory({ history, players }) {
   if(!history.length) return (
     <Panel style={{textAlign:"center",padding:40}}>
       <div style={{fontSize:36,marginBottom:10,opacity:.5}}>🃏</div>
-      <div style={{color:C.muted,fontSize:15,fontStyle:"italic"}}>No rounds completed yet</div>
+      <div style={{color:"var(--text-2)",fontSize:15,fontStyle:"italic"}}>No rounds completed yet</div>
     </Panel>
   );
   return (
@@ -522,8 +522,8 @@ function RoundHistory({ history, players }) {
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
             <Card suit={r.trump} size="sm"/>
             <div>
-              <div style={{color:C.gold,fontSize:12,fontWeight:700,letterSpacing:1}}>Round {r.round+1}</div>
-              <div style={{color:C.muted,fontSize:12}}>{r.roundCards} cards · {SUIT_NAME[r.trump]} trump</div>
+              <div style={{color:"var(--gold-2)",fontSize:12,fontWeight:700,letterSpacing:1}}>Round {r.round+1}</div>
+              <div style={{color:"var(--text-2)",fontSize:12}}>{r.roundCards} cards · {SUIT_NAME[r.trump]} trump</div>
             </div>
           </div>
           {players.map((p,pi)=>{
@@ -532,13 +532,13 @@ function RoundHistory({ history, players }) {
               <div key={p} style={{
                 display:"flex",alignItems:"center",gap:8,marginBottom:4,
                 padding:"6px 10px",borderRadius:8,
-                background:hit?"rgba(26,107,60,.12)":"rgba(192,57,43,.08)",
-                borderLeft:`3px solid ${hit?C.green:C.red}`
+                background:hit?"rgba(34,197,94,.08)":"rgba(239,68,68,.08)",
+                borderLeft:`3px solid ${hit?"var(--green-pos)":"var(--red-neg)"}`
               }}>
                 <span style={{fontSize:14}}>{hit?"✅":"❌"}</span>
-                <div style={{flex:1,color:C.cream,fontSize:13,fontFamily:"'Playfair Display',serif"}}>{p}</div>
-                <div style={{color:C.muted,fontSize:12}}>called {nom}</div>
-                <div style={{color:hit?C.gold:C.redL,fontWeight:700,fontSize:13,minWidth:48,textAlign:"right"}}>+{pts}pts</div>
+                <div style={{flex:1,color:"var(--text-1)",fontSize:13,fontFamily:"'Playfair Display',serif"}}>{p}</div>
+                <div style={{color:"var(--text-2)",fontSize:12}}>called {nom}</div>
+                <div style={{color:hit?"var(--gold-2)":"var(--red-neg)",fontWeight:700,fontSize:13,minWidth:48,textAlign:"right"}}>+{pts}pts</div>
               </div>
             );
           })}
@@ -595,8 +595,8 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
     <div style={{width:"100%",maxWidth:460}} className="fade-up">
       <div style={{textAlign:"center",marginBottom:36}}>
         <CardFan/>
-        <h1 style={{color:C.gold,fontSize:50,fontWeight:900,fontFamily:"'Playfair Display',serif",letterSpacing:-1,textShadow:`0 2px 24px ${C.gold}55,0 0 60px ${C.gold}22`}}>Nominations</h1>
-        <p style={{color:C.muted,fontSize:15,marginTop:8,fontStyle:"italic",fontFamily:"'EB Garamond',serif"}}>The trick-taking scoring companion</p>
+        <h1 style={{color:"var(--gold-2)",fontSize:50,fontWeight:900,fontFamily:"'Playfair Display',serif",letterSpacing:-1,textShadow:`0 2px 24px rgba(201,168,76,.35),0 0 60px rgba(201,168,76,.15)`}}>Nominations</h1>
+        <p style={{color:"var(--text-2)",fontSize:15,marginTop:8,fontStyle:"italic",fontFamily:"system-ui"}}>The trick-taking scoring companion</p>
       </div>
       <Panel>
         <Lbl style={{marginBottom:12}}>
@@ -919,8 +919,8 @@ export default function App() {
         <Confetti/>
         <div style={{maxWidth:500,margin:"0 auto",padding:"28px 20px",textAlign:"center"}} className="fade-up">
           <Lbl style={{textAlign:"center",marginBottom:10}}>Game Over</Lbl>
-          <h1 style={{color:C.gold,fontSize:44,fontWeight:900,fontFamily:"'Playfair Display',serif",textShadow:`0 2px 28px ${C.gold}66`,marginBottom:6}}>Final Standings</h1>
-          <p style={{color:C.muted,fontStyle:"italic",marginBottom:28,fontSize:15}}>{totalRounds} rounds played</p>
+          <h1 style={{color:"var(--gold-2)",fontSize:44,fontWeight:900,fontFamily:"'Playfair Display',serif",textShadow:`0 2px 28px rgba(201,168,76,.4)`,marginBottom:6}}>Final Standings</h1>
+          <p style={{color:"var(--text-2)",fontStyle:"italic",marginBottom:28,fontSize:15}}>{totalRounds} rounds played</p>
           <Podium sorted={sorted}/>
           {/* Full list */}
           <Panel style={{marginBottom:0,textAlign:"left"}}>
@@ -928,13 +928,13 @@ export default function App() {
               const pc=PLAYER_COLORS[p.idx%PLAYER_COLORS.length];
               return(
                 <div key={p.name} className="slide-in" style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none",animationDelay:`${i*60}ms`}}>
-                  <div style={{fontSize:i<3?22:14,width:30,textAlign:"center",color:i<3?"inherit":C.muted,flexShrink:0}}>
+                  <div style={{fontSize:i<3?22:14,width:30,textAlign:"center",color:i<3?"inherit":"var(--text-3)",flexShrink:0}}>
                     {i<3?["🥇","🥈","🥉"][i]:i+1}
                   </div>
                   <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0}}/>
-                  <div style={{flex:1,color:C.cream,fontSize:17,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-                  <div style={{color:i===0?C.gold:C.cream,fontWeight:700,fontSize:21,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-                    {p.score}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
+                  <div style={{flex:1,color:"var(--text-1)",fontSize:17,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
+                  <div style={{color:i===0?"var(--gold-2)":"var(--text-1)",fontWeight:700,fontSize:21,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
+                    {p.score}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
                   </div>
                 </div>
               );
@@ -944,8 +944,8 @@ export default function App() {
           <Divider/>
           {confirmPlayAgain?(
             <Panel accent>
-              <div style={{color:C.cream,fontSize:16,fontWeight:700,marginBottom:6,fontFamily:"'Playfair Display',serif"}}>Play again with same players?</div>
-              <div style={{color:C.muted,fontSize:13,marginBottom:16,fontStyle:"italic"}}>Scores will reset to zero.</div>
+              <div style={{color:"var(--text-1)",fontSize:16,fontWeight:700,marginBottom:6,fontFamily:"'Playfair Display',serif"}}>Play again with same players?</div>
+              <div style={{color:"var(--text-2)",fontSize:13,marginBottom:16,fontStyle:"italic"}}>Scores will reset to zero.</div>
               <div style={{display:"flex",gap:10}}>
                 <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(false)}>Cancel</Btn>
                 <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("spin");}}>Confirm →</Btn>
@@ -967,8 +967,8 @@ export default function App() {
     <div style={{padding:"16px 18px 0",maxWidth:600,margin:"0 auto"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
         <div>
-          <div style={{color:C.gold,fontFamily:"'Playfair Display',serif",fontSize:23,fontWeight:900,letterSpacing:-.5,textShadow:`0 1px 14px ${C.gold}33`}}>Nominations</div>
-          <div style={{color:C.muted,fontSize:12}}>
+          <div style={{color:"var(--gold-2)",fontFamily:"'Playfair Display',serif",fontSize:23,fontWeight:900,letterSpacing:-.5,textShadow:`0 1px 14px rgba(201,168,76,.2)`}}>Nominations</div>
+          <div style={{color:"var(--text-2)",fontSize:12}}>
             Round {round+1} of {totalRounds} · {roundCards} cards
             {trump&&<> · Trump: <span style={{color:SUIT_COLOR[trump],fontWeight:700}}>{trump}</span></>}
           </div>
@@ -1038,11 +1038,11 @@ export default function App() {
                   {isDealer?"Dealer's call":"Your call"}
                   {isDealer&&<span style={{color:C.redL,marginLeft:8,fontSize:10}}>· total can't equal {roundCards}</span>}
                 </Lbl>
-                <div style={{color:C.cream,fontSize:28,fontWeight:700,fontFamily:"'Playfair Display',serif",lineHeight:1.1}}>{players[nomIdx]}</div>
+                <div style={{color:"var(--text-1)",fontSize:28,fontWeight:700,fontFamily:"'Playfair Display',serif",lineHeight:1.1}}>{players[nomIdx]}</div>
               </div>
               <div style={{textAlign:"right"}}>
-                <div style={{color:C.muted,fontSize:12}}>{doneCount} of {players.length} called</div>
-                <div style={{color:C.cream,fontSize:19,fontWeight:700,fontFamily:"'Playfair Display',serif"}}>{roundCards} tricks</div>
+                <div style={{color:"var(--text-2)",fontSize:12}}>{doneCount} of {players.length} called</div>
+                <div style={{color:"var(--text-1)",fontSize:19,fontWeight:700,fontFamily:"'Playfair Display',serif"}}>{roundCards} tricks</div>
               </div>
             </div>
             <Lbl style={{marginBottom:12}}>How many tricks will you win?</Lbl>
@@ -1082,10 +1082,10 @@ export default function App() {
               {order.filter(pi=>noms[pi]!==null).map(pi=>(
                 <div key={pi} style={{display:"flex",alignItems:"center",justifyContent:"space-between",background:"rgba(255,255,255,.03)",borderRadius:12,padding:"11px 16px",border:"1px solid rgba(255,255,255,.07)"}}>
                   <div>
-                    <div style={{color:C.cream,fontSize:14,fontFamily:"'Playfair Display',serif"}}>{players[pi]}</div>
-                    <div style={{color:C.muted,fontSize:12}}>Called <strong style={{color:C.gold}}>{noms[pi]}</strong></div>
+                    <div style={{color:"var(--text-1)",fontSize:14,fontFamily:"'Playfair Display',serif"}}>{players[pi]}</div>
+                    <div style={{color:"var(--text-2)",fontSize:12}}>Called <strong style={{color:"var(--gold-2)"}}>{noms[pi]}</strong></div>
                   </div>
-                  <button onClick={()=>changeNom(pi)} style={{padding:"5px 14px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,color:C.muted,cursor:"pointer",fontSize:12}}>Edit</button>
+                  <button onClick={()=>changeNom(pi)} style={{padding:"5px 14px",background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,color:"var(--text-2)",cursor:"pointer",fontSize:12}}>Edit</button>
                 </div>
               ))}
             </div>
@@ -1159,14 +1159,14 @@ export default function App() {
                     )}
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                       <div>
-                        <div style={{color:C.cream,fontSize:16,fontWeight:600,fontFamily:"'Playfair Display',serif"}}>{name}</div>
-                        <div style={{color:C.gold,fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-                          {scores[i]}<span style={{fontSize:11,color:C.muted,marginLeft:2}}>pts</span>
+                        <div style={{color:"var(--text-1)",fontSize:16,fontWeight:600,fontFamily:"'Playfair Display',serif"}}>{name}</div>
+                        <div style={{color:"var(--gold-2)",fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
+                          {scores[i]}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
                         </div>
                       </div>
                       <div style={{textAlign:"right"}}>
-                        <div style={{color:C.mutedD,fontSize:9,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"'EB Garamond'"}}>Called</div>
-                        <div style={{color:C.cream,fontSize:32,fontWeight:900,fontFamily:"'Playfair Display',serif",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{nom}</div>
+                        <div style={{color:"var(--text-3)",fontSize:9,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"system-ui"}}>Called</div>
+                        <div style={{color:"var(--text-1)",fontSize:32,fontWeight:900,fontFamily:"'Playfair Display',serif",lineHeight:1,fontVariantNumeric:"tabular-nums"}}>{nom}</div>
                       </div>
                     </div>
                     <div style={{display:"flex",gap:8}}>
