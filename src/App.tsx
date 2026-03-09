@@ -884,7 +884,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
   const hasDupes=filled.length!==new Set(filled).size;
   const valid=filled.length>=2&&!hasDupes;
   const maxRounds=filled.length>=2?Math.min(10,Math.floor(52/filled.length)):10;
-  const roundOpts=[5,7,10,13].filter(r=>r<=maxRounds);
+  const roundOpts=[...new Set([...[5,7,10,13].filter(r=>r<maxRounds),maxRounds])];
   if(rounds>maxRounds)setRounds(maxRounds);
 
   return (
