@@ -171,29 +171,38 @@ function CardFan() {
 function Divider({ style={} }) {
   return (
     <div style={{display:"flex",alignItems:"center",gap:10,margin:"18px 0",...style}}>
-      <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,${C.gold}44)`}}/>
-      <span style={{color:C.goldD,fontSize:13,lineHeight:1}}>✦</span>
-      <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,${C.gold}44)`}}/>
+      <div style={{flex:1,height:1,background:`linear-gradient(to right,transparent,var(--border-mid))`}}/>
+      <span style={{color:"var(--gold-3)",fontSize:13,lineHeight:1}}>✦</span>
+      <div style={{flex:1,height:1,background:`linear-gradient(to left,transparent,var(--border-mid))`}}/>
     </div>
   );
 }
 
 // ─── PANEL ────────────────────────────────────────────────────────────────────
-function Panel({ children, accent, style={} }) {
+function Panel({ children, accent, table=false, style={} }) {
+  const bg = table
+    ? `linear-gradient(158deg, #0f4d26 0%, #0b3d1e 100%), ${feltTex}`
+    : "var(--bg-surface)";
+  const border = accent
+    ? "1px solid var(--border-strong)"
+    : table
+    ? "1px solid var(--border-mid)"
+    : "1px solid var(--border-subtle)";
   return (
     <div style={{
-      background:"linear-gradient(158deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.018) 100%)",
-      borderRadius:20, padding:"20px 22px",
-      border:`1px solid ${accent?"rgba(201,168,76,.38)":"rgba(255,255,255,.085)"}`,
-      boxShadow:"0 10px 36px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06)",
-      backdropFilter:"blur(6px)", ...style
+      background: bg,
+      borderRadius: 16,
+      padding: "20px 22px",
+      border,
+      boxShadow: "var(--shadow-2)",
+      ...style
     }}>{children}</div>
   );
 }
 
 // ─── LABEL ────────────────────────────────────────────────────────────────────
 function Lbl({ children, style={} }) {
-  return <div style={{color:C.gold,fontSize:10,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",fontFamily:"'EB Garamond',serif",...style}}>{children}</div>;
+  return <div style={{color:"var(--gold-2)",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",fontFamily:"system-ui,'Segoe UI',sans-serif",...style}}>{children}</div>;
 }
 
 // ─── PROGRESS ─────────────────────────────────────────────────────────────────
