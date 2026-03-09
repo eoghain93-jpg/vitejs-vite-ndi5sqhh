@@ -2,12 +2,18 @@ import { useState, useRef, useEffect } from "react";
 
 // ─── TOKENS ───────────────────────────────────────────────────────────────────
 const C = {
-  gold:"#c9a84c", goldL:"#e8c96a", goldD:"#7a6020", goldXD:"#3a2c0a",
+  // Gold scale
+  gold:"#c9a84c", goldL:"#f0d080", goldD:"#8a6f2e", goldXD:"#3a2c0a",
+  // Felt surfaces (table only, not chrome)
   felt:"#0b3d1e", feltM:"#0f4d26", feltD:"#071a0e",
+  // App chrome (near-black)
+  bg:"#070709", bgSurface:"#0f1012", bgRaised:"#161719",
+  // Text
   cream:"#f5f0e8", dark:"#060e08",
-  red:"#c0392b", redL:"#e05545",
-  green:"#1a6b3c", greenD:"#0d4d28",
-  muted:"#6a8a6a", mutedD:"#374f37",
+  // Status
+  red:"#ef4444", redL:"#ef4444",
+  green:"#22c55e", greenD:"#16a34a",
+  muted:"#a89f8c", mutedD:"#5a5248",
 };
 const SUITS = ["♠","♥","♦","♣"];
 const SUIT_NAME  = {"♠":"Spades","♥":"Hearts","♦":"Diamonds","♣":"Clubs"};
@@ -23,8 +29,37 @@ const getRoundCards = (ri,tot) => tot-ri;
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+  :root {
+    --bg-base:       #070709;
+    --bg-surface:    #0f1012;
+    --bg-raised:     #161719;
+    --bg-table:      #0b3d1e;
+    --bg-table-mid:  #0f4d26;
+    --gold-1:        #f0d080;
+    --gold-2:        #c9a84c;
+    --gold-3:        #8a6f2e;
+    --gold-4:        #3a2c0a;
+    --green-pos:     #22c55e;
+    --red-neg:       #ef4444;
+    --text-1:        #f5f0e8;
+    --text-2:        #a89f8c;
+    --text-3:        #5a5248;
+    --border-subtle: rgba(255,255,255,.06);
+    --border-mid:    rgba(201,168,76,.18);
+    --border-strong: rgba(201,168,76,.45);
+    --shadow-1:      0 1px 3px rgba(0,0,0,.4);
+    --shadow-2:      0 4px 12px rgba(0,0,0,.5);
+    --shadow-3:      0 12px 32px rgba(0,0,0,.6);
+    --shadow-gold:   0 0 20px rgba(201,168,76,.25);
+    --ease-out:      cubic-bezier(0.22,1,0.36,1);
+    --ease-spring:   cubic-bezier(0.34,1.56,0.64,1);
+    --ease-smooth:   cubic-bezier(0.4,0,0.2,1);
+    --dur-fast:      150ms;
+    --dur-mid:       280ms;
+    --dur-slow:      500ms;
+  }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  body{background:#050e08;}
+  body{background:var(--bg-base);}
   button,input{font-family:inherit;}
   ::selection{background:#c9a84c33;}
 
