@@ -160,6 +160,94 @@ const STYLES = {
     confirmBtns: { display:"flex", gap:10 },
   },
 
+  // ── Round Summary ─────────────────────────────────────────────────────────────
+  summary: {
+    wrap:      { width:"100%", maxWidth:500 },
+    heading:   { textAlign:"center", marginBottom:24 },
+    h2:        { fontFamily:"'Playfair Display',serif", fontSize:30, fontWeight:900, marginBottom:4 },
+    sub:       { fontSize:15, fontStyle:"italic" },
+    row:       { display:"flex", alignItems:"center", gap:12, padding:"13px 12px", borderRadius:8, marginBottom:4 },
+    iconWrap:  { width:28, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
+    nameWrap:  { flex:1, minWidth:0 },
+    name:      { fontWeight:600, fontSize:15, fontFamily:"'Playfair Display',serif", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" },
+    called:    { fontSize:12, marginTop:1 },
+    ptsWrap:   { textAlign:"right", flexShrink:0 },
+    pts:       { fontWeight:700, fontSize:19, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    prevScore: { fontSize:11 },
+    rankBadge: { fontSize:11, fontWeight:700, minWidth:28, textAlign:"center", flexShrink:0, animation:"rankIn .35s ease both" },
+    next:      { marginTop:18 },
+  },
+
+  // ── End screen ───────────────────────────────────────────────────────────────
+  end: {
+    outer:     { maxWidth:500, margin:"0 auto", padding:"28px 20px", textAlign:"center" },
+    h1:        { fontSize:44, fontWeight:900, fontFamily:"'Playfair Display',serif", marginBottom:6 },
+    sub:       { fontStyle:"italic", marginBottom:28, fontSize:15 },
+    listRow:   { display:"flex", alignItems:"center", gap:12, padding:"12px 4px" },
+    listBar:   { width:4, height:28, borderRadius:2, flexShrink:0 },
+    listName:  { fontSize:17, fontFamily:"'Playfair Display',serif" },
+    listScore: { fontWeight:700, fontSize:21, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    listPts:   { fontSize:11, marginLeft:2 },
+    ctaRow:    { display:"flex", gap:12 },
+    confirmTitle:{ fontSize:16, fontWeight:700, marginBottom:6, fontFamily:"'Playfair Display',serif" },
+    confirmSub:  { fontSize:13, marginBottom:16, fontStyle:"italic" },
+    confirmBtns: { display:"flex", gap:10 },
+  },
+
+  // ── Leaderboard ───────────────────────────────────────────────────────────────
+  leaderboard: {
+    row:       { display:"flex", alignItems:"center", gap:12, padding:"11px 0" },
+    colorBar:  { width:4, height:28, borderRadius:2, flexShrink:0, opacity:.85 },
+    nameWrap:  { flex:1 },
+    name:      { fontSize:15, fontFamily:"'Playfair Display',serif" },
+    barTrack:  { height:6, borderRadius:2, background:"rgba(255,255,255,.06)", marginTop:5, overflow:"hidden" },
+    score:     { fontSize:18, fontWeight:700, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    scorePts:  { fontSize:11, marginLeft:2 },
+  },
+
+  // ── Round History ─────────────────────────────────────────────────────────────
+  history: {
+    emptyIcon: { marginBottom:10, opacity:.5, display:"flex", justifyContent:"center" },
+    emptyText: { fontSize:15, fontStyle:"italic" },
+    roundMeta: { display:"flex", alignItems:"center", gap:10, marginBottom:10 },
+    roundLbl:  { fontSize:12, fontWeight:700, letterSpacing:1 },
+    roundSub:  { fontSize:12 },
+    hitRow:    { display:"flex", alignItems:"center", gap:8, marginBottom:4, padding:"6px 10px", borderRadius:8, background:"rgba(34,197,94,.08)", borderLeft:"3px solid var(--green-pos)" },
+    missRow:   { display:"flex", alignItems:"center", gap:8, marginBottom:4, padding:"6px 10px", borderRadius:8, background:"rgba(239,68,68,.08)", borderLeft:"3px solid var(--red-neg)" },
+    pName:     { flex:1, fontSize:13, fontFamily:"'Playfair Display',serif" },
+    pCalled:   { fontSize:12 },
+    pPts:      { fontWeight:700, fontSize:13, minWidth:48, textAlign:"right" },
+  },
+
+  // ── Money ─────────────────────────────────────────────────────────────────────
+  money: {
+    headerRow: { display:"flex", alignItems:"center", gap:12, marginBottom:2 },
+    avatar:    { width:44, height:44, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
+    sub:       { fontSize:12, marginTop:2, fontStyle:"italic" },
+    debtRow:   { display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0" },
+    debtName:  { fontSize:16, fontFamily:"'Playfair Display',serif" },
+    debtRight: { textAlign:"right" },
+    debtAmt:   { fontWeight:700, fontSize:22, fontFamily:"'Playfair Display',serif", fontVariantNumeric:"tabular-nums" },
+    ptsBehind: { fontSize:11 },
+  },
+
+  // ── Podium ────────────────────────────────────────────────────────────────────
+  podium: {
+    wrap:     { display:"flex", justifyContent:"center", alignItems:"flex-end", gap:6, marginBottom:28 },
+    col:      { display:"flex", flexDirection:"column", alignItems:"center", gap:6, flex:1, maxWidth:120 },
+    medal:    { width:36, height:36, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, marginBottom:2 },
+    platform: { width:"100%", borderRadius:"10px 10px 0 0", border:"1px solid var(--border-mid)", display:"flex", alignItems:"flex-start", justifyContent:"center", paddingTop:10, background:"var(--bg-table)" },
+  },
+
+  // ── Shared header ─────────────────────────────────────────────────────────────
+  hdr: {
+    wrap:      { padding:"16px 18px 0", maxWidth:600, margin:"0 auto" },
+    topRow:    { display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 },
+    title:     { fontFamily:"'Playfair Display',serif", fontSize:23, fontWeight:900, letterSpacing:-.5 },
+    sub:       { fontSize:12 },
+    tabRow:    { display:"flex", gap:4 },
+  },
+
 } as const;
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
@@ -685,7 +773,7 @@ function Leaderboard({ players, scores }) {
         const pc=PLAYER_COLORS[p.idx%PLAYER_COLORS.length];
         return(
           <div key={p.name} className="slide-in" style={{
-            display:"flex",alignItems:"center",gap:12,padding:"11px 0",
+            ...STYLES.leaderboard.row,
             borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none",
             animationDelay:`${i*60}ms`
           }}>
@@ -696,15 +784,15 @@ function Leaderboard({ players, scores }) {
               color: i <= 2 ? "var(--gold-2)" : "var(--text-3)",
               width: 32, textAlign:"center", flexShrink:0
             }}>{i+1}</div>
-            <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0,opacity:.85}}/>
-            <div style={{flex:1}}>
-              <div style={{color:"var(--text-1)",fontSize:15,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-              <div style={{height:6,borderRadius:2,background:"rgba(255,255,255,.06)",marginTop:5,overflow:"hidden"}}>
+            <div style={{...STYLES.leaderboard.colorBar, background:pc}}/>
+            <div style={STYLES.leaderboard.nameWrap}>
+              <div style={{...STYLES.leaderboard.name, color:"var(--text-1)"}}>{p.name}</div>
+              <div style={STYLES.leaderboard.barTrack}>
                 <div style={{height:"100%",width:`${(p.score/maxScore)*100}%`,background:`linear-gradient(to right,${pc}99,${pc})`,transition:"width .6s ease"}}/>
               </div>
             </div>
-            <div style={{color:"var(--text-1)",fontSize:18,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-              {p.score}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
+            <div style={{...STYLES.leaderboard.score, color:"var(--gold-2)"}}>
+              {p.score}<span style={{...STYLES.leaderboard.scorePts, color:"var(--text-3)"}}>pts</span>
             </div>
           </div>
         );
@@ -717,8 +805,8 @@ function Leaderboard({ players, scores }) {
 function RoundHistory({ history, players }) {
   if(!history.length) return (
     <Panel style={{textAlign:"center",padding:40}}>
-      <div style={{marginBottom:10,opacity:.5,display:"flex",justifyContent:"center"}}><CardIcon size={36} color="var(--text-2)"/></div>
-      <div style={{color:"var(--text-2)",fontSize:15,fontStyle:"italic"}}>No rounds completed yet</div>
+      <div style={STYLES.history.emptyIcon}><CardIcon size={36} color="var(--text-2)"/></div>
+      <div style={{...STYLES.history.emptyText, color:"var(--text-3)"}}>No rounds completed yet</div>
     </Panel>
   );
   return (
@@ -726,26 +814,21 @@ function RoundHistory({ history, players }) {
       <Lbl style={{marginBottom:16,display:"flex",alignItems:"center",gap:6}}><ClipboardIcon color="var(--gold-2)"/> Round History</Lbl>
       {history.map((r,ri)=>(
         <div key={ri} style={{marginBottom:16,paddingBottom:16,borderBottom:ri<history.length-1?"1px solid rgba(255,255,255,.055)":"none"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+          <div style={STYLES.history.roundMeta}>
             <Card suit={r.trump} size="sm"/>
             <div>
-              <div style={{color:"var(--gold-2)",fontSize:12,fontWeight:700,letterSpacing:1}}>Round {r.round+1}</div>
-              <div style={{color:"var(--text-2)",fontSize:12}}>{r.roundCards} cards · {SUIT_NAME[r.trump]} trump</div>
+              <div style={{...STYLES.history.roundLbl, color:"var(--text-3)"}}>Round {r.round+1}</div>
+              <div style={{...STYLES.history.roundSub, color:"var(--text-3)"}}>{r.roundCards} cards · {SUIT_NAME[r.trump]} trump</div>
             </div>
           </div>
           {players.map((p,pi)=>{
             const nom=r.nominations[pi],hit=r.hits[pi],pts=hit?10+nom:0;
             return(
-              <div key={p} style={{
-                display:"flex",alignItems:"center",gap:8,marginBottom:4,
-                padding:"6px 10px",borderRadius:8,
-                background:hit?"rgba(34,197,94,.08)":"rgba(239,68,68,.08)",
-                borderLeft:`3px solid ${hit?"var(--green-pos)":"var(--red-neg)"}`
-              }}>
+              <div key={p} style={hit ? STYLES.history.hitRow : STYLES.history.missRow}>
                 {hit ? <CheckCircleIcon size={16} color="var(--green-pos)"/> : <XCircleIcon size={16} color="var(--red-neg)"/>}
-                <div style={{flex:1,color:"var(--text-1)",fontSize:13,fontFamily:"'Playfair Display',serif"}}>{p}</div>
-                <div style={{color:"var(--text-2)",fontSize:12}}>called {nom}</div>
-                <div style={{color:hit?"var(--gold-2)":"var(--red-neg)",fontWeight:700,fontSize:13,minWidth:48,textAlign:"right"}}>+{pts}pts</div>
+                <div style={{...STYLES.history.pName, color:"var(--text-1)"}}>{p}</div>
+                <div style={{...STYLES.history.pCalled, color:"var(--text-3)"}}>called {nom}</div>
+                <div style={{...STYLES.history.pPts, color:hit?"var(--green-pos)":"var(--red-neg)"}}>+{pts}pts</div>
               </div>
             );
           })}
@@ -761,11 +844,11 @@ function Money({ players, scores, stake }) {
   const w=sorted[0];
   return (
     <Panel accent style={{marginTop:18}}>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:2}}>
-        <div style={{width:44,height:44,borderRadius:"50%",background:`linear-gradient(135deg,${C.gold},${C.goldD})`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:`0 4px 16px ${C.gold}44`}}><CoinsIcon size={22} color={C.dark}/></div>
+      <div style={STYLES.money.headerRow}>
+        <div style={{...STYLES.money.avatar, background:`linear-gradient(135deg,${C.gold},${C.goldD})`, boxShadow:`0 4px 16px ${C.gold}44`}}><CoinsIcon size={22} color={C.dark}/></div>
         <div>
           <Lbl>Owed to {w.name}</Lbl>
-          <div style={{color:C.muted,fontSize:12,marginTop:2,fontStyle:"italic"}}>{fmtStake(stake)} per point · winner on {w.score}pts</div>
+          <div style={{...STYLES.money.sub, color:"var(--text-3)"}}>{fmtStake(stake)} per point · winner on {w.score}pts</div>
         </div>
       </div>
       <Divider style={{margin:"14px 0"}}/>
@@ -773,13 +856,13 @@ function Money({ players, scores, stake }) {
         const diff=w.score-p.score;
         return (
           <div key={p.name} style={{
-            display:"flex",justifyContent:"space-between",alignItems:"center",
-            padding:"12px 0",borderBottom:i<sorted.length-2?"1px solid rgba(255,255,255,.055)":"none"
+            ...STYLES.money.debtRow,
+            borderBottom:i<sorted.length-2?"1px solid rgba(255,255,255,.055)":"none"
           }}>
-            <div style={{color:"var(--text-1)",fontSize:16,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-            <div style={{textAlign:"right"}}>
-              <div style={{color:"var(--red-neg)",fontWeight:700,fontSize:22,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{fmtMoney(diff*stake)}</div>
-              <div style={{color:C.mutedD,fontSize:11}}>{diff} pts behind</div>
+            <div style={{...STYLES.money.debtName, color:"var(--text-1)"}}>{p.name}</div>
+            <div style={STYLES.money.debtRight}>
+              <div style={{...STYLES.money.debtAmt, color:"var(--red-neg)"}}>{fmtMoney(diff*stake)}</div>
+              <div style={{...STYLES.money.ptsBehind, color:"var(--text-3)"}}>{diff} pts behind</div>
             </div>
           </div>
         );
@@ -864,12 +947,12 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
   const rankAfter=[...players].map((p,i)=>({name:p,score:scores[i]})).sort((a,b)=>b.score-a.score).map(p=>p.name);
   return (
     <Felt center>
-      <div style={{width:"100%",maxWidth:500}} className="fade-up">
-        <div style={{textAlign:"center",marginBottom:24}}>
+      <div style={STYLES.summary.wrap} className="fade-up">
+        <div style={STYLES.summary.heading}>
           <Card suit={trump} size="lg" glow style={{margin:"0 auto"}}/>
           <Lbl style={{textAlign:"center",marginTop:16,marginBottom:8}}>Round {round+1} Complete</Lbl>
-          <h2 style={{color:"var(--text-1)",fontFamily:"'Playfair Display',serif",fontSize:30,fontWeight:900,marginBottom:4}}>Round Summary</h2>
-          <div style={{color:"var(--text-2)",fontSize:15,fontStyle:"italic"}}>{SUIT_NAME[trump]} was trump</div>
+          <h2 style={{...STYLES.summary.h2, color:"var(--text-1)"}}>Round Summary</h2>
+          <div style={{...STYLES.summary.sub, color:"var(--text-2)"}}>{SUIT_NAME[trump]} was trump</div>
         </div>
         <Panel>
           {players.map((name,i)=>{
@@ -878,30 +961,29 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
             const posB=rankBefore.indexOf(name),posA=rankAfter.indexOf(name),delta=posB-posA;
             return (
               <div key={name} className="slide-in" style={{
-                display:"flex",alignItems:"center",gap:12,padding:"13px 12px",
-                borderRadius:8,marginBottom:4,
+                ...STYLES.summary.row,
                 background:hit?"rgba(34,197,94,.08)":"rgba(239,68,68,.08)",
                 borderLeft:hit?"3px solid var(--green-pos)":"3px solid var(--red-neg)",
                 animationDelay:`${i*70}ms`
               }}>
-                <div style={{width:28,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <div style={STYLES.summary.iconWrap}>
                   {hit
                     ? <CheckCircleIcon size={22} color="var(--green-pos)"/>
                     : <XCircleIcon size={22} color="var(--red-neg)"/>}
                 </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{color:"var(--text-1)",fontWeight:600,fontSize:15,fontFamily:"'Playfair Display',serif",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name}</div>
-                  <div style={{color:"var(--text-2)",fontSize:12,marginTop:1}}>Called <strong style={{color:pc}}>{nom}</strong> · {hit?"Hit!":"Missed"}</div>
+                <div style={STYLES.summary.nameWrap}>
+                  <div style={{...STYLES.summary.name, color:"var(--text-1)"}}>{name}</div>
+                  <div style={{...STYLES.summary.called, color:"var(--text-2)"}}>Called <strong style={{color:pc}}>{nom}</strong> · {hit?"Hit!":"Missed"}</div>
                 </div>
-                <div style={{textAlign:"right",flexShrink:0}}>
-                  <div style={{color:hit?"var(--green-pos)":"var(--red-neg)",fontWeight:700,fontSize:19,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>+{gained}pts</div>
-                  <div style={{color:"var(--text-3)",fontSize:11}}>{prevScores[i]} → <span style={{color:"var(--text-1)"}}>{scores[i]}</span></div>
+                <div style={STYLES.summary.ptsWrap}>
+                  <div style={{...STYLES.summary.pts, color:hit?"var(--green-pos)":"var(--red-neg)"}}>+{gained}pts</div>
+                  <div style={{...STYLES.summary.prevScore, color:"var(--text-3)"}}>{prevScores[i]} → <span style={{color:"var(--text-1)"}}>{scores[i]}</span></div>
                 </div>
                 {players.length>1&&(
                   <div className="rank-in" style={{
-                    fontSize:11,fontWeight:700,minWidth:28,textAlign:"center",flexShrink:0,
+                    ...STYLES.summary.rankBadge,
                     color:delta>0?"var(--green-pos)":delta<0?"var(--red-neg)":"var(--text-3)",
-                    animation:"rankIn .35s ease both",animationDelay:`${i*70+200}ms`
+                    animationDelay:`${i*70+200}ms`
                   }}>
                     {delta>0?`↑${delta}`:delta<0?`↓${Math.abs(delta)}`:"–"}
                   </div>
@@ -910,7 +992,7 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
             );
           })}
         </Panel>
-        <div style={{marginTop:18}}><Btn v="gold" full onClick={onNext}>{isLast?"See Final Results →":"Next Round →"}</Btn></div>
+        <div style={STYLES.summary.next}><Btn v="gold" full onClick={onNext}>{isLast?"See Final Results →":"Next Round →"}</Btn></div>
       </div>
     </Felt>
   );
@@ -944,31 +1026,25 @@ function Podium({ sorted }) {
   if(sorted.length<1)return null;
   const order=sorted.length>=3?[sorted[1],sorted[0],sorted[2]]:sorted.length===2?[sorted[1],sorted[0]]:sorted;
   const heights=["88px","64px","48px"];
-  const medalColors=["var(--bg-table)","var(--bg-table)","var(--bg-table)"];
   const positions=sorted.length>=3?[1,0,2]:[1,0];
   return (
-    <div style={{display:"flex",justifyContent:"center",alignItems:"flex-end",gap:6,marginBottom:28}}>
+    <div style={STYLES.podium.wrap}>
       {order.map((p,vi)=>{
         const rank=positions[vi];
         const h=parseInt(heights[rank]);
         const pc=PLAYER_COLORS[(p.idx??rank)%PLAYER_COLORS.length];
         return (
-          <div key={p.name} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6,flex:1,maxWidth:120}}>
+          <div key={p.name} style={STYLES.podium.col}>
             <div style={{
-              width:36,height:36,borderRadius:"50%",
+              ...STYLES.podium.medal,
               background:`linear-gradient(135deg,${pc}33,${pc}11)`,
               border:`2px solid ${pc}66`,
-              display:"flex",alignItems:"center",justifyContent:"center",
-              fontSize:18,marginBottom:2
             }}><MedalIcon rank={rank+1} size={rank===0?26:20}/></div>
             <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?15:13,fontFamily:"'Playfair Display',serif",fontWeight:rank===0?700:500,textAlign:"center",width:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",padding:"0 4px"}}>{p.name}</div>
             <div style={{color:rank===0?C.gold:C.cream,fontSize:rank===0?20:16,fontWeight:700,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>{p.score}<span style={{fontSize:10,color:C.muted,marginLeft:2}}>pts</span></div>
             <div style={{
-              width:"100%", height:`${h}px`,
-              background:medalColors[rank],
-              borderRadius:"10px 10px 0 0",
-              border:"1px solid var(--border-mid)",
-              display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:10,
+              ...STYLES.podium.platform,
+              height:`${h}px`,
               fontSize:rank===0?24:18,
               boxShadow:rank===0?`0 -6px 24px ${C.gold}55`:`0 -2px 10px rgba(0,0,0,.3)`,
               animation:`podiumRise .5s ${rank===0?.05:rank===1?.15:.25}s cubic-bezier(.34,1.3,.64,1) both`
@@ -1123,24 +1199,24 @@ export default function App() {
     return(
       <Felt style={{paddingBottom:48}}><style>{CSS}</style>
         <Confetti/>
-        <div style={{maxWidth:500,margin:"0 auto",padding:"28px 20px",textAlign:"center"}} className="fade-up">
+        <div style={STYLES.end.outer} className="fade-up">
           <Lbl style={{textAlign:"center",marginBottom:10}}>Game Over</Lbl>
-          <h1 style={{color:"var(--gold-2)",fontSize:44,fontWeight:900,fontFamily:"'Playfair Display',serif",textShadow:`0 2px 28px rgba(201,168,76,.4)`,marginBottom:6}}>Final Standings</h1>
-          <p style={{color:"var(--text-2)",fontStyle:"italic",marginBottom:28,fontSize:15}}>{totalRounds} rounds played</p>
+          <h1 style={{...STYLES.end.h1, color:"var(--gold-2)", textShadow:`0 2px 28px rgba(201,168,76,.4)`}}>Final Standings</h1>
+          <p style={{...STYLES.end.sub, color:"var(--text-2)"}}>{totalRounds} rounds played</p>
           <Podium sorted={sorted}/>
           {/* Full list */}
           <Panel style={{marginBottom:0,textAlign:"left"}}>
             {sorted.map((p,i)=>{
               const pc=PLAYER_COLORS[p.idx%PLAYER_COLORS.length];
               return(
-                <div key={p.name} className="slide-in" style={{display:"flex",alignItems:"center",gap:12,padding:"12px 4px",borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none",animationDelay:`${i*60}ms`}}>
+                <div key={p.name} className="slide-in" style={{...STYLES.end.listRow, borderBottom:i<sorted.length-1?"1px solid rgba(255,255,255,.055)":"none", animationDelay:`${i*60}ms`}}>
                   <div style={{width:30,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                     {i<3 ? <MedalIcon rank={i+1} size={20}/> : <span style={{color:"var(--text-3)",fontSize:14}}>{i+1}</span>}
                   </div>
-                  <div style={{width:4,height:28,borderRadius:2,background:pc,flexShrink:0}}/>
-                  <div style={{flex:1,color:"var(--text-1)",fontSize:17,fontFamily:"'Playfair Display',serif"}}>{p.name}</div>
-                  <div style={{color:i===0?"var(--gold-2)":"var(--text-1)",fontWeight:700,fontSize:21,fontFamily:"'Playfair Display',serif",fontVariantNumeric:"tabular-nums"}}>
-                    {p.score}<span style={{fontSize:11,color:"var(--text-3)",marginLeft:2}}>pts</span>
+                  <div style={{...STYLES.end.listBar, background:pc}}/>
+                  <div style={{...STYLES.end.listName, flex:1, color:"var(--text-1)"}}>{p.name}</div>
+                  <div style={{...STYLES.end.listScore, color:i===0?"var(--gold-2)":"var(--text-1)"}}>
+                    {p.score}<span style={{...STYLES.end.listPts, color:"var(--text-3)"}}>pts</span>
                   </div>
                 </div>
               );
@@ -1150,15 +1226,15 @@ export default function App() {
           <Divider/>
           {confirmPlayAgain?(
             <Panel accent>
-              <div style={{color:"var(--text-1)",fontSize:16,fontWeight:700,marginBottom:6,fontFamily:"'Playfair Display',serif"}}>Play again with same players?</div>
-              <div style={{color:"var(--text-2)",fontSize:13,marginBottom:16,fontStyle:"italic"}}>Scores will reset to zero.</div>
-              <div style={{display:"flex",gap:10}}>
+              <div style={{...STYLES.end.confirmTitle, color:"var(--text-1)"}}>Play again with same players?</div>
+              <div style={{...STYLES.end.confirmSub, color:"var(--text-2)"}}>Scores will reset to zero.</div>
+              <div style={STYLES.end.confirmBtns}>
                 <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(false)}>Cancel</Btn>
                 <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("spin");}}>Confirm →</Btn>
               </div>
             </Panel>
           ):(
-            <div style={{display:"flex",gap:12}}>
+            <div style={STYLES.end.ctaRow}>
               <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(true)}>Play Again</Btn>
               <Btn v="gold" full onClick={()=>setPhase("setup")}>New Game</Btn>
             </div>
@@ -1170,11 +1246,11 @@ export default function App() {
 
   // ── SHARED HEADER ──
   const Hdr=()=>(
-    <div style={{padding:"16px 18px 0",maxWidth:600,margin:"0 auto"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+    <div style={STYLES.hdr.wrap}>
+      <div style={STYLES.hdr.topRow}>
         <div>
-          <div style={{color:"var(--gold-2)",fontFamily:"'Playfair Display',serif",fontSize:23,fontWeight:900,letterSpacing:-.5,textShadow:`0 1px 14px rgba(201,168,76,.2)`}}>Nominations</div>
-          <div style={{color:"var(--text-2)",fontSize:12}}>
+          <div style={{...STYLES.hdr.title, color:"var(--text-1)", textShadow:`0 1px 14px rgba(201,168,76,.2)`}}>Nominations</div>
+          <div style={{...STYLES.hdr.sub, color:"var(--text-3)"}}>
             Round {round+1} of {totalRounds} · {roundCards} cards
             {trump&&<> · Trump: <span style={{color:SUIT_COLOR[trump],fontWeight:700}}>{trump}</span></>}
           </div>
@@ -1182,7 +1258,7 @@ export default function App() {
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
           {trump&&<Card suit={trump} size="sm" glow/>}
           {phase==="play"&&(
-            <div style={{display:"flex",gap:4}}>
+            <div style={STYLES.hdr.tabRow}>
               {([
                 ["game",    <CardIcon size={14}/>],
                 ["table",   <TrophyIcon size={14}/>],
