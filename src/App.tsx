@@ -364,7 +364,7 @@ function SpinWheel({ players, onDone }) {
   return (
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:28}}>
       <div className={spinning?"spin-glow":""} style={{borderRadius:"50%"}}>
-        <canvas ref={canvasRef} width={310} height={310} style={{display:"block",maxWidth:"calc(100vw - 80px)",height:"auto"}}/>
+        <canvas ref={canvasRef} width={320} height={320} style={{display:"block",width:"min(320px, calc(100vw - 80px))",height:"auto"}}/>
       </div>
       {result ? (
         <div className="pop-in" style={{textAlign:"center"}}>
@@ -848,9 +848,15 @@ export default function App() {
   if(phase==="spin")return(
     <Felt center><style>{CSS}</style>
       <div style={{width:"100%",maxWidth:440,textAlign:"center"}} className="fade-up">
-        <h2 style={{color:C.gold,fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:6,textShadow:`0 2px 20px ${C.gold}55`}}>Who deals first?</h2>
-        <p style={{color:C.muted,fontSize:16,marginBottom:32,fontStyle:"italic"}}>Spin the wheel to decide</p>
-        <SpinWheel players={players} onDone={afterSpin}/>
+        <h2 style={{color:"var(--gold-2)",fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:6,textShadow:`0 2px 20px rgba(201,168,76,.35)`}}>Who deals first?</h2>
+        <p style={{color:"var(--text-2)",fontSize:16,marginBottom:32,fontStyle:"italic"}}>Spin the wheel to decide</p>
+        <div style={{
+          position:"relative",
+          background:"radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%)",
+          borderRadius:24, padding:"0 0 32px",
+        }}>
+          <SpinWheel players={players} onDone={afterSpin}/>
+        </div>
       </div>
     </Felt>
   );
@@ -860,9 +866,9 @@ export default function App() {
     <Felt center><style>{CSS}</style>
       <div style={{width:"100%",maxWidth:480,textAlign:"center"}} className="fade-up">
         <Lbl style={{textAlign:"center",marginBottom:8}}>Round {round+1} of {totalRounds}</Lbl>
-        <h2 style={{color:C.cream,fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:4}}>{roundCards} cards dealt</h2>
-        <p style={{color:C.muted,fontSize:15,marginBottom:10,fontStyle:"italic"}}>{players[dealerIdx]} is dealing</p>
-        <Panel style={{marginBottom:28,padding:"14px 18px"}}>
+        <h2 style={{color:"var(--text-1)",fontFamily:"'Playfair Display',serif",fontSize:34,fontWeight:900,marginBottom:4}}>{roundCards} cards dealt</h2>
+        <p style={{color:"var(--text-2)",fontSize:15,marginBottom:10,fontStyle:"italic"}}>{players[dealerIdx]} is dealing</p>
+        <Panel table style={{marginBottom:28,padding:"14px 18px"}}>
           <Lbl style={{marginBottom:10,textAlign:"center"}}>Dealer rotation this game</Lbl>
           <div style={{display:"flex",justifyContent:"center",flexWrap:"wrap",gap:6}}>
             {players.map((p,i)=>(
