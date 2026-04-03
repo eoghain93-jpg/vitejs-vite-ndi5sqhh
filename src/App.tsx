@@ -1246,7 +1246,7 @@ export default function App() {
               <div style={{...STYLES.end.confirmSub, color:"var(--text-2)"}}>Scores will reset to zero.</div>
               <div style={STYLES.end.confirmBtns}>
                 <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(false)}>Cancel</Btn>
-                <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("spin");}}>Confirm →</Btn>
+                <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("dealerSelect");}}>Confirm →</Btn>
               </div>
             </Panel>
           ):(
@@ -1255,6 +1255,35 @@ export default function App() {
               <Btn v="gold" full onClick={()=>setPhase("setup")}>New Game</Btn>
             </div>
           )}
+        </div>
+      </Felt>
+    );
+  }
+
+  // ── DEALER SELECT ──
+  if(phase==="dealerSelect"){
+    const nextIdx=(initialDealerIdx+1)%players.length;
+    const nextName=players[nextIdx];
+    const prevName=players[initialDealerIdx];
+    return(
+      <Felt center><style>{CSS}</style>
+        <div style={STYLES.spin.wrap} className="fade-up">
+          <h2 style={{...STYLES.spin.heading, color:"var(--gold-2)"}}>Who deals first?</h2>
+          <p style={{...STYLES.spin.sub, color:"var(--text-2)"}}>
+            {prevName} dealt first last game
+          </p>
+          <Panel accent style={{marginTop:24,marginBottom:24,textAlign:"center"}}>
+            <div style={{color:"var(--text-3)",fontSize:13,marginBottom:6}}>Next in rotation</div>
+            <div style={{color:"var(--gold-2)",fontSize:28,fontWeight:800,fontFamily:"'Playfair Display',serif"}}>{nextName}</div>
+          </Panel>
+          <div style={{display:"flex",flexDirection:"column",gap:12,width:"100%",maxWidth:320}}>
+            <Btn v="gold" full onClick={()=>beginRound(0,nextIdx,Array(players.length).fill(0))}>
+              Continue rotation → {nextName}
+            </Btn>
+            <Btn v="ghost" full onClick={()=>setPhase("spin")}>
+              Spin again
+            </Btn>
+          </div>
         </div>
       </Felt>
     );
