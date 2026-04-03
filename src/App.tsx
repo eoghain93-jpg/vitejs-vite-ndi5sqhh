@@ -870,6 +870,13 @@ function Money({ players, scores, stake }) {
           </div>
         );
       })}
+      <Divider style={{margin:"14px 0"}}/>
+      <div style={{...STYLES.money.debtRow}}>
+        <div style={{...STYLES.money.debtName, color:"var(--text-2)", fontWeight:700}}>Total owed to {w.name}</div>
+        <div style={STYLES.money.debtRight}>
+          <div style={{...STYLES.money.debtAmt, color:"var(--gold-2)"}}>{fmtMoney(sorted.slice(1).reduce((sum,p)=>sum+(w.score-p.score)*stake,0))}</div>
+        </div>
+      </div>
     </Panel>
   );
 }
