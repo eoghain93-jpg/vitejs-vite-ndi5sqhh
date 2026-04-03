@@ -1077,6 +1077,7 @@ export default function App() {
   const [stakePerPoint,setStakePerPoint]=useState(5);
   const [round,setRound]=useState(0);
   const [dealerIdx,setDealerIdx]=useState(0);
+  const [initialDealerIdx,setInitialDealerIdx]=useState(0);
   const [scores,setScores]=useState([]);
   const [trump,setTrump]=useState(null);
   const [history,setHistory]=useState([]);
@@ -1105,7 +1106,9 @@ export default function App() {
   function startGame(pl,rnds,stk){setPlayers(pl);setTotalRounds(rnds);setStakePerPoint(stk);setScores(Array(pl.length).fill(0));setHistory([]);setPhase("spin");}
 
   function afterSpin(name){
-    const idx=players.indexOf(name); setDealerIdx(idx);
+    const idx=players.indexOf(name);
+    setDealerIdx(idx);
+    setInitialDealerIdx(idx);
     beginRound(0,idx,Array(players.length).fill(0));
   }
 
