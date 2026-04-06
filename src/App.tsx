@@ -1431,6 +1431,9 @@ export default function App() {
 
   // ── PLAY ──
   const tNom=totalNom(), nomDiff=tNom-roundCards, anyHit=hits.some(h=>h!==null);
+  const hitNomTotal=noms.reduce((s,n,i)=>s+(hits[i]===true?(n??0):0),0);
+  const resolvedAllHit=allResolved()&&hits.every(h=>h===true);
+  const impossibleResult=hitNomTotal>roundCards||(resolvedAllHit&&hitNomTotal<roundCards);
 
   return(
     <Felt style={{paddingBottom:60}}>
@@ -1529,14 +1532,29 @@ export default function App() {
               })}
             </div>
 
+            {/* Impossible result warning */}
+            {impossibleResult&&(
+              <div className="pop-in" style={{borderRadius:10,padding:"10px 14px",marginBottom:8,background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.35)",display:"flex",alignItems:"center",gap:8}}>
+                <XCircleIcon size={16} color={C.red}/>
+                <span style={{fontSize:13,color:C.red}}>
+                  {hitNomTotal>roundCards
+                    ? `Too many tricks claimed — only ${roundCards} available`
+                    : `${roundCards-hitNomTotal} trick${roundCards-hitNomTotal!==1?"s":""} unaccounted for — at least one player must miss`}
+                </span>
+              </div>
+            )}
+
             {/* Undo + End */}
             <div style={STYLES.play.undoRow}>
               {anyHit&&<Btn v="ghost" sm onClick={undoHit}>↩ Undo</Btn>}
               {allResolved()&&!confirmEnd&&(
-                <button className="press btn-primary" onClick={()=>setConfirmEnd(true)} style={{
+                <button className="press btn-primary" onClick={()=>!impossibleResult&&setConfirmEnd(true)} style={{
                   ...STYLES.play.endRoundBtn,
-                  border:`1.5px solid ${C.gold}`,color:C.gold,
-                  boxShadow:`0 6px 28px ${C.gold}28`,
+                  border:`1.5px solid ${impossibleResult?C.mutedD:C.gold}`,
+                  color:impossibleResult?C.mutedD:C.gold,
+                  boxShadow:impossibleResult?"none":`0 6px 28px ${C.gold}28`,
+                  cursor:impossibleResult?"not-allowed":"pointer",
+                  opacity:impossibleResult?0.5:1,
                 }}>{round+1>=totalRounds?"See Final Results →":`End Round ${round+1} →`}</button>
               )}
             </div>
