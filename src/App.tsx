@@ -73,6 +73,7 @@ const STYLES = {
       border:"1.5px solid", minHeight:48,
       transition:`all var(--dur-fast) var(--ease-smooth)`,
       letterSpacing:"0.06em", textTransform:"uppercase" as const,
+      touchAction:"manipulation" as const,
     },
     disabled: { cursor:"not-allowed" as const, opacity:0.38 },
     def:   { background:"var(--bg-raised)", borderColor:"var(--border-subtle)", color:"var(--text-1)" },
@@ -343,7 +344,6 @@ function MedalIcon({ rank, size=22, style={} }: { rank: number; size?: number; s
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
   :root {
     --bg-base:       #070709;
     --bg-surface:    #0f1012;
@@ -374,8 +374,8 @@ const CSS = `
     --dur-slow:      500ms;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  body{background:var(--bg-base);}
-  button,input{font-family:inherit;}
+  body{background:var(--bg-base);overscroll-behavior:contain;}
+  button,input{font-family:inherit;touch-action:manipulation;}
   ::selection{background:rgba(201,168,76,.2);}
 
   @keyframes fadeUp   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -554,7 +554,7 @@ function Btn({ children, onClick, disabled=false, v="def", full=false, sm=false,
   const sizeOverride = sm ? { padding:"10px 18px", fontSize:13, minHeight:40 } : { padding:"14px 28px" };
   const cls = ["press", v==="gold"?"btn-primary":"", ripple&&!disabled?"ripple-btn":""].join(" ");
   return (
-    <button className={cls} onClick={!disabled?onClick:undefined} style={{
+    <button disabled={disabled} className={cls} onClick={!disabled?onClick:undefined} style={{
       ...STYLES.btn.base,
       ...STYLES.btn[v as keyof typeof STYLES.btn],
       ...sizeOverride,
@@ -671,7 +671,7 @@ function SpinWheel({ players, onDone }) {
   return (
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:28}}>
       <div className={spinning?"spin-glow":""} style={{borderRadius:"50%"}}>
-        <canvas ref={canvasRef} width={320} height={320} style={{display:"block",width:"min(320px, calc(100vw - 80px))",height:"auto"}}/>
+        <canvas ref={canvasRef} width={320} height={320} role="img" aria-label={`Spin wheel with players: ${players.join(", ")}`} style={{display:"block",width:"min(320px, calc(100vw - 80px))",height:"auto"}}/>
       </div>
       {result ? (
         <div className="pop-in" style={{textAlign:"center"}}>
@@ -911,7 +911,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
             <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
               style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
             {names.length>2&&(
-              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} style={STYLES.setup.removeBtn}>×</button>
+              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} aria-label={`Remove player ${i+1}`} style={STYLES.setup.removeBtn}>×</button>
             )}
           </div>
         ))}
@@ -919,7 +919,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
           <button onClick={()=>setNames(n=>[...n,""])} style={STYLES.setup.addBtn}>＋ Add Player</button>
         )}
         {hasDupes&&(
-          <div style={{color:C.redL,fontSize:12,marginTop:8,padding:"7px 12px",background:"rgba(192,57,43,.1)",borderRadius:8,border:"1px solid rgba(192,57,43,.22)"}}>⚠ Player names must be unique</div>
+          <div style={{display:"flex",alignItems:"center",gap:6,color:C.redL,fontSize:12,marginTop:8,padding:"7px 12px",background:"rgba(192,57,43,.1)",borderRadius:8,border:"1px solid rgba(192,57,43,.22)"}}><XCircleIcon size={14} color={C.redL}/> Player names must be unique</div>
         )}
         <Divider/>
         <Lbl style={{marginBottom:10}}>Rounds</Lbl>
@@ -1089,6 +1089,13 @@ export default function App() {
   const [confirmEnd,setConfirmEnd]=useState(false);
   const [confirmPlayAgain,setConfirmPlayAgain]=useState(false);
 
+  useEffect(()=>{
+    const el=document.createElement("style");
+    el.textContent=CSS;
+    document.head.appendChild(el);
+    return()=>el.remove();
+  },[]);
+
   const roundCards=getRoundCards(round,totalRounds);
 
   const nomOrder=(dealer,cnt)=>Array.from({length:cnt},(_,i)=>(dealer+1+i)%cnt);
@@ -1153,14 +1160,14 @@ export default function App() {
 
   // ── SETUP ──
   if(phase==="setup")return(
-    <Felt center><style>{CSS}</style>
+    <Felt center>
       <Setup onStart={startGame} initNames={players.length?players:null} initRounds={totalRounds} initStake={stakePerPoint}/>
     </Felt>
   );
 
   // ── SPIN ──
   if(phase==="spin")return(
-    <Felt center><style>{CSS}</style>
+    <Felt center>
       <div style={STYLES.spin.wrap} className="fade-up">
         <h2 style={{...STYLES.spin.heading, color:"var(--gold-2)"}}>Who deals first?</h2>
         <p style={{...STYLES.spin.sub, color:"var(--text-2)"}}>Spin the wheel to decide</p>
@@ -1173,7 +1180,7 @@ export default function App() {
 
   // ── TRUMP ──
   if(phase==="trump")return(
-    <Felt center><style>{CSS}</style>
+    <Felt center>
       <div style={STYLES.trump.wrap} className="fade-up">
         <Lbl style={{textAlign:"center",marginBottom:8}}>Round {round+1} of {totalRounds}</Lbl>
         <h2 style={{...STYLES.trump.heading, color:"var(--text-1)"}}>{roundCards} cards dealt</h2>
@@ -1190,7 +1197,7 @@ export default function App() {
                   color:i===dealerIdx?C.gold:C.cream,
                   fontWeight:i===dealerIdx?700:400,
                   boxShadow:i===dealerIdx?`0 0 10px ${C.gold}22`:"none"
-                }}>{p}{i===dealerIdx?" 🂡":""}</div>
+                }}>{p}{i===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:C.gold,marginLeft:5,verticalAlign:"middle"}}/>}</div>
                 {i<players.length-1&&<span style={{...STYLES.trump.separator, color:"var(--text-3)"}}>›</span>}
               </div>
             ))}
@@ -1203,7 +1210,7 @@ export default function App() {
 
   // ── ROUND SUMMARY ──
   if(phase==="roundSummary")return(
-    <><style>{CSS}</style>
+    <>
       <RoundSummary players={players} nominations={noms} hits={hits} scores={scores}
         prevScores={prevScores} round={round} trump={trump} onNext={afterSummary} isLast={round+1>=totalRounds}/>
     </>
@@ -1213,7 +1220,7 @@ export default function App() {
   if(phase==="end"){
     const sorted=[...players].map((p,i)=>({name:p,score:scores[i],idx:i})).sort((a,b)=>b.score-a.score);
     return(
-      <Felt style={{paddingBottom:48}}><style>{CSS}</style>
+      <Felt style={{paddingBottom:48}}>
         <Confetti/>
         <div style={STYLES.end.outer} className="fade-up">
           <Lbl style={{textAlign:"center",marginBottom:10}}>Game Over</Lbl>
@@ -1266,7 +1273,7 @@ export default function App() {
     const nextName=players[nextIdx];
     const prevName=players[initialDealerIdx];
     return(
-      <Felt center><style>{CSS}</style>
+      <Felt center>
         <div style={STYLES.spin.wrap} className="fade-up">
           <h2 style={{...STYLES.spin.heading, color:"var(--gold-2)"}}>Who deals first?</h2>
           <p style={{...STYLES.spin.sub, color:"var(--text-2)"}}>
@@ -1304,12 +1311,8 @@ export default function App() {
           {trump&&<Card suit={trump} size="sm" glow/>}
           {phase==="play"&&(
             <div style={STYLES.hdr.tabRow}>
-              {([
-                ["game",    <CardIcon size={14}/>],
-                ["table",   <TrophyIcon size={14}/>],
-                ["history", <ClipboardIcon size={14}/>],
-              ]).map(([t,ic])=>(
-                <button key={t} className="tab-pill press" onClick={()=>setTab(t)} style={{
+              {([ ["game",<CardIcon size={14}/>,"Game"], ["table",<TrophyIcon size={14}/>,"Standings"], ["history",<ClipboardIcon size={14}/>,"History"] ] as any[]).map(([t,ic,label]:any)=>(
+                <button key={t} aria-label={label} aria-pressed={tab===t} className="tab-pill press" onClick={()=>setTab(t)} style={{
                   padding:"10px 14px",fontSize:12,borderRadius:9,cursor:"pointer",minHeight:44,display:"flex",alignItems:"center",gap:5,
                   background:tab===t?"rgba(201,168,76,.14)":"rgba(0,0,0,.3)",
                   border:`1px solid ${tab===t?C.gold:"rgba(255,255,255,.1)"}`,
@@ -1332,7 +1335,7 @@ export default function App() {
     const doneCount=noms.filter(n=>n!==null).length;
 
     return(
-      <Felt style={{paddingBottom:48}}><style>{CSS}</style>
+      <Felt style={{paddingBottom:48}}>
         <Hdr/>
         <div style={{maxWidth:600,margin:"0 auto",padding:"0 18px"}}>
           {/* Order strip */}
@@ -1352,7 +1355,7 @@ export default function App() {
                         border:`1px solid ${active?C.gold:done?C.green+"88":"rgba(255,255,255,.08)"}`,
                         color:active?C.gold:done?"#7ac47a":C.mutedD,fontWeight:active?700:400,
                         boxShadow:active?`0 0 12px ${C.gold}22`:"none"
-                      }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx?" 🂡":""}</div>
+                      }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:C.gold,marginLeft:5,verticalAlign:"middle"}}/>}</div>
                     </div>
                     {pos<order.length-1&&<span style={{color:"#2a3a2a",fontSize:12,marginTop:12}}>›</span>}
                   </div>
@@ -1430,7 +1433,7 @@ export default function App() {
   const tNom=totalNom(), nomDiff=tNom-roundCards, anyHit=hits.some(h=>h!==null);
 
   return(
-    <Felt style={{paddingBottom:60}}><style>{CSS}</style>
+    <Felt style={{paddingBottom:60}}>
       <Hdr/>
       <div className="max-game-width" style={{maxWidth:600,margin:"0 auto",padding:"0 18px"}}>
         {tab==="table"  &&<Leaderboard players={players} scores={scores}/>}
@@ -1446,8 +1449,16 @@ export default function App() {
               <div style={{...STYLES.play.bustLeft,color:"var(--text-2)"}}>
                 Nominated: <strong style={{color:"var(--gold-2)",fontVariantNumeric:"tabular-nums"}}>{tNom}</strong> / {roundCards}
               </div>
-              <div style={{...STYLES.play.bustRight,color:nomDiff===0?"var(--red-neg)":nomDiff>0?"var(--gold-2)":"var(--green-pos)"}}>
-                {nomDiff===0?"⚠ Bust round!":nomDiff>0?`+${nomDiff} over`:`${Math.abs(nomDiff)} under`}
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                {!anyHit&&(
+                  <button onClick={()=>changeNom(nomOrder(dealerIdx,players.length)[players.length-1])}
+                    style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"var(--text-3)",fontFamily:"system-ui",fontStyle:"italic",textDecoration:"underline",padding:"4px 0",minHeight:44,display:"flex",alignItems:"center"}}>
+                    Edit calls
+                  </button>
+                )}
+                <div style={{...STYLES.play.bustRight,color:nomDiff===0?"var(--red-neg)":nomDiff>0?"var(--gold-2)":"var(--green-pos)"}}>
+                  {nomDiff===0?"⚠ Bust round!":nomDiff>0?`+${nomDiff} over`:`${Math.abs(nomDiff)} under`}
+                </div>
               </div>
             </div>
 
