@@ -1,23 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 
 // ─── TOKENS ───────────────────────────────────────────────────────────────────
+// CSS-var refs so JSX inline styles auto-theme via [data-theme].
+// Canvas sites (SpinWheel.draw) read resolved hex via getComputedStyle separately.
 const C = {
-  // Gold scale
-  gold:"#c9a84c", goldL:"#f0d080", goldD:"#8a6f2e", goldXD:"#3a2c0a",
-  // Felt surfaces (table only, not chrome)
-  felt:"#0b3d1e", feltM:"#0f4d26", feltD:"#071a0e",
-  // App chrome (near-black)
-  bg:"#070709", bgSurface:"#0f1012", bgRaised:"#161719",
-  // Text
-  cream:"#f5f0e8", dark:"#060e08",
-  // Status
-  red:"#ef4444", redL:"#ef4444",
-  green:"#22c55e", greenD:"#16a34a",
-  muted:"#a89f8c", mutedD:"#5a5248",
+  gold:"var(--gold-2)", goldL:"var(--gold-1)", goldD:"var(--gold-3)", goldXD:"var(--gold-4)",
+  felt:"var(--bg-table)", feltM:"var(--bg-table-mid)",
+  bg:"var(--bg-base)", bgSurface:"var(--bg-surface)", bgRaised:"var(--bg-raised)",
+  cream:"var(--text-1)", dark:"var(--on-gold)",
+  red:"var(--red-neg)", redL:"var(--red-neg)",
+  green:"var(--green-pos)", greenD:"var(--green-deep)",
+  muted:"var(--text-2)", mutedD:"var(--text-3)",
 };
 const SUITS = ["♠","♥","♦","♣"];
 const SUIT_NAME  = {"♠":"Spades","♥":"Hearts","♦":"Diamonds","♣":"Clubs"};
-const SUIT_COLOR = {"♠":"#1a1a2e","♥":C.red,"♦":C.red,"♣":"#1a1a2e"};
+const SUIT_COLOR = {"♠":"var(--suit-dark)","♥":"var(--suit-red)","♦":"var(--suit-red)","♣":"var(--suit-dark)"};
 const SUIT_BG    = {"♠":"#eaecf4","♥":"#fce8e8","♦":"#fce8e8","♣":"#eaecf4"};
 const WHEEL_HUE  = ["#1a6b3c","#b8943c","#2c5f8a","#7a3060","#4a7a30","#7a4a20","#325078","#5a3a10"];
 const PLAYER_COLORS = ["#c9a84c","#5ba3e8","#e85b8a","#5bca8a","#e87a4a","#9b6be8","#4bcece","#d4c04a"];
@@ -42,7 +39,7 @@ const STYLES = {
     base: {
       minHeight:"100vh",
       backgroundColor:"var(--bg-base)",
-      backgroundImage:`radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, var(--bg-base) 60%)`,
+      backgroundImage:"var(--felt-grad)",
       fontFamily:"system-ui,'Segoe UI',sans-serif",
     },
   },
@@ -351,6 +348,14 @@ function MedalIcon({ rank, size=22, style={} }: { rank: number; size?: number; s
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS = `
   :root {
+    --ease-out:      cubic-bezier(0.22,1,0.36,1);
+    --ease-spring:   cubic-bezier(0.34,1.56,0.64,1);
+    --ease-smooth:   cubic-bezier(0.4,0,0.2,1);
+    --dur-fast:      150ms;
+    --dur-mid:       280ms;
+    --dur-slow:      500ms;
+  }
+  [data-theme="dark"], :root:not([data-theme]) {
     --bg-base:       #070709;
     --bg-surface:    #0f1012;
     --bg-raised:     #161719;
@@ -361,10 +366,14 @@ const CSS = `
     --gold-3:        #8a6f2e;
     --gold-4:        #3a2c0a;
     --green-pos:     #22c55e;
+    --green-deep:    #16a34a;
     --red-neg:       #ef4444;
     --text-1:        #f5f0e8;
     --text-2:        #a89f8c;
     --text-3:        #5a5248;
+    --on-gold:       #2a1f05;
+    --suit-red:      #ef4444;
+    --suit-dark:     #1a1a2e;
     --border-subtle: rgba(255,255,255,.06);
     --border-mid:    rgba(201,168,76,.18);
     --border-strong: rgba(201,168,76,.45);
@@ -372,24 +381,47 @@ const CSS = `
     --shadow-2:      0 4px 12px rgba(0,0,0,.5);
     --shadow-3:      0 12px 32px rgba(0,0,0,.6);
     --shadow-gold:   0 0 20px rgba(201,168,76,.25);
-    --ease-out:      cubic-bezier(0.22,1,0.36,1);
-    --ease-spring:   cubic-bezier(0.34,1.56,0.64,1);
-    --ease-smooth:   cubic-bezier(0.4,0,0.2,1);
-    --dur-fast:      150ms;
-    --dur-mid:       280ms;
-    --dur-slow:      500ms;
+    --felt-grad:     radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, #070709 60%);
+  }
+  [data-theme="light"] {
+    --bg-base:       #f4ecdb;
+    --bg-surface:    #faf3e3;
+    --bg-raised:     #ffffff;
+    --bg-table:      #ecd9b5;
+    --bg-table-mid:  #e4d0a5;
+    --gold-1:        #c49231;
+    --gold-2:        #9d7920;
+    --gold-3:        #6a4e0f;
+    --gold-4:        #3a2c0a;
+    --green-pos:     #1f7a43;
+    --green-deep:    #186236;
+    --red-neg:       #a83232;
+    --text-1:        #1c1814;
+    --text-2:        #4a4233;
+    --text-3:        #8a7f69;
+    --on-gold:       #fff5e0;
+    --suit-red:      #a83232;
+    --suit-dark:     #1a1a2e;
+    --border-subtle: rgba(40,30,10,.08);
+    --border-mid:    rgba(40,30,10,.18);
+    --border-strong: rgba(157,121,32,.55);
+    --shadow-1:      0 2px 8px rgba(40,30,10,.06);
+    --shadow-2:      0 6px 24px rgba(40,30,10,.09);
+    --shadow-3:      0 14px 36px rgba(40,30,10,.15);
+    --shadow-gold:   0 6px 22px rgba(157,121,32,.22);
+    --felt-grad:     radial-gradient(ellipse at 50% 0%, #f9f0dc 0%, #f4ecdb 60%);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-  body{background:var(--bg-base);overscroll-behavior:contain;}
+  body{background:var(--bg-base);overscroll-behavior:contain;transition:background-color var(--dur-mid) var(--ease-smooth);}
   button,input{font-family:inherit;touch-action:manipulation;}
-  ::selection{background:rgba(201,168,76,.2);}
+  ::selection{background:color-mix(in srgb, var(--gold-2) 20%, transparent);}
 
   @keyframes fadeUp   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes popIn    {from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
   @keyframes shimmer  {0%,100%{background-position:200% center}50%{background-position:0% center}}
-  @keyframes ripple   {0%{box-shadow:0 0 0 0 #c9a84c55}100%{box-shadow:0 0 0 14px #c9a84c00}}
-  @keyframes glow     {0%,100%{text-shadow:0 0 8px #c9a84c33}50%{text-shadow:0 0 28px #c9a84caa}}
-  @keyframes spin-glow{0%,100%{box-shadow:0 0 0 3px #c9a84c33,0 12px 40px #00000088}50%{box-shadow:0 0 0 3px #c9a84c99,0 12px 40px #00000088}}
+  @keyframes ripple   {0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--gold-2) 33%, transparent)}100%{box-shadow:0 0 0 14px color-mix(in srgb, var(--gold-2) 0%, transparent)}}
+  @keyframes glow     {0%,100%{text-shadow:0 0 8px color-mix(in srgb, var(--gold-2) 20%, transparent)}50%{text-shadow:0 0 28px color-mix(in srgb, var(--gold-2) 67%, transparent)}}
+  @keyframes spin-glow{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb, var(--gold-2) 20%, transparent),0 12px 40px rgba(0,0,0,.53)}50%{box-shadow:0 0 0 3px color-mix(in srgb, var(--gold-2) 60%, transparent),0 12px 40px rgba(0,0,0,.53)}}
   @keyframes slideIn  {from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
   @keyframes confetti {0%{transform:translateY(-16px) rotate(0deg);opacity:1}100%{transform:translateY(108vh) rotate(580deg);opacity:0}}
   @keyframes podiumRise{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
@@ -436,7 +468,7 @@ const CSS = `
 // SVG cross-hatch felt texture
 const feltTex = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0L4 4M4 0L0 4' stroke='%23ffffff' stroke-width='0.3' opacity='0.04'/%3E%3C/svg%3E")`;
 
-function Felt({ children, center, style={} }) {
+function Felt({ children, center=false, style={} }) {
   return (
     <div style={{
       ...STYLES.felt.base,
@@ -448,7 +480,7 @@ function Felt({ children, center, style={} }) {
 }
 
 // ─── PLAYING CARD ─────────────────────────────────────────────────────────────
-function Card({ suit, size="md", glow, rotate=0, style={} }) {
+function Card({ suit, size="md", glow=false, rotate=0, style={} }) {
   if (!suit) return null;
   const S = {sm:{w:36,h:50,fs:20,pip:9,rank:11},md:{w:54,h:74,fs:30,pip:11,rank:14},lg:{w:96,h:128,fs:52,pip:15,rank:20}};
   const s = S[size];
@@ -459,7 +491,7 @@ function Card({ suit, size="md", glow, rotate=0, style={} }) {
       background:`linear-gradient(150deg,#ffffff,${bg})`,
       border:`1.5px solid ${glow?C.gold:"rgba(0,0,0,0.18)"}`,
       boxShadow:glow
-        ?`0 0 0 2.5px ${C.gold}88, 0 8px 28px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.9)`
+        ?`0 0 0 2.5px color-mix(in srgb, var(--gold-2) 53%, transparent), 0 8px 28px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.9)`
         :`0 4px 18px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.9)`,
       position:"relative", overflow:"hidden", transform:`rotate(${rotate}deg)`,
       transition:"box-shadow .2s", ...style
@@ -586,17 +618,29 @@ function SpinWheel({ players, onDone }) {
     return `#${r.toString(16).padStart(2,"0")}${g.toString(16).padStart(2,"0")}${b.toString(16).padStart(2,"0")}`;
   }
 
+  function resolvedColors() {
+    const s = getComputedStyle(document.documentElement);
+    const get = (k: string, fb: string) => (s.getPropertyValue(k).trim() || fb);
+    return {
+      gold:  get("--gold-2", "#c9a84c"),
+      goldL: get("--gold-1", "#f0d080"),
+      goldD: get("--gold-3", "#8a6f2e"),
+      hub:   "#060e08",
+    };
+  }
+
   function draw(angle) {
     const cv=canvasRef.current; if(!cv) return;
     const ctx=cv.getContext("2d");
     const W=cv.width, cx=W/2, cy=W/2, R=cx-14;
+    const TC = resolvedColors();
     ctx.clearRect(0,0,W,W);
 
     // Outer glow ring
     ctx.save();
-    ctx.shadowColor="#c9a84c66"; ctx.shadowBlur=18;
+    ctx.shadowColor=`${TC.gold}66`; ctx.shadowBlur=18;
     ctx.beginPath(); ctx.arc(cx,cy,R+6,0,2*Math.PI);
-    ctx.strokeStyle=`${C.gold}44`; ctx.lineWidth=5; ctx.stroke();
+    ctx.strokeStyle=`${TC.gold}44`; ctx.lineWidth=5; ctx.stroke();
     ctx.restore();
 
     // Dark base disc
@@ -628,7 +672,7 @@ function SpinWheel({ players, onDone }) {
       ctx.save();
       ctx.translate(cx,cy); ctx.rotate(ta);
       ctx.beginPath(); ctx.moveTo(R+1,0); ctx.lineTo(R+7,0);
-      ctx.strokeStyle=C.gold+"aa"; ctx.lineWidth=2; ctx.stroke();
+      ctx.strokeStyle=TC.gold+"aa"; ctx.lineWidth=2; ctx.stroke();
       ctx.restore();
     }
 
@@ -637,22 +681,22 @@ function SpinWheel({ players, onDone }) {
       ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
       if(i===0){
         const hg=ctx.createRadialGradient(cx-3,cy-3,0,cx,cy,22);
-        hg.addColorStop(0,C.goldL); hg.addColorStop(1,C.goldD);
+        hg.addColorStop(0,TC.goldL); hg.addColorStop(1,TC.goldD);
         ctx.fillStyle=hg;
-      } else if(i===1){ ctx.fillStyle=C.dark; }
-      else { ctx.fillStyle=C.gold+"cc"; }
+      } else if(i===1){ ctx.fillStyle=TC.hub; }
+      else { ctx.fillStyle=TC.gold+"cc"; }
       ctx.fill();
       if(i===0){ctx.strokeStyle="#00000033";ctx.lineWidth=1;ctx.stroke();}
     });
 
     // Pointer (right side)
-    ctx.save(); ctx.shadowColor=C.gold; ctx.shadowBlur=12;
+    ctx.save(); ctx.shadowColor=TC.gold; ctx.shadowBlur=12;
     ctx.beginPath();
     ctx.moveTo(cx+R+2,cy); ctx.lineTo(cx+R+20,cy-12); ctx.lineTo(cx+R+20,cy+12);
-    ctx.closePath(); ctx.fillStyle=C.gold; ctx.fill();
+    ctx.closePath(); ctx.fillStyle=TC.gold; ctx.fill();
     // pointer highlight
     ctx.beginPath(); ctx.moveTo(cx+R+6,cy); ctx.lineTo(cx+R+18,cy-7); ctx.lineTo(cx+R+18,cy-3);
-    ctx.closePath(); ctx.fillStyle=C.goldL+"66"; ctx.fill();
+    ctx.closePath(); ctx.fillStyle=TC.goldL+"66"; ctx.fill();
     ctx.restore();
   }
 
@@ -710,7 +754,7 @@ function TrumpPicker({ onPick, onBack=null }) {
             background:`linear-gradient(148deg,#ffffff,${SUIT_BG[pending]})`,
             border:`2.5px solid ${C.gold}`,
             display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:4,
-            boxShadow:`0 0 0 4px ${C.gold}33, 0 12px 36px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.95)`,
+            boxShadow:`0 0 0 4px color-mix(in srgb, var(--gold-2) 20%, transparent), 0 12px 36px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.95)`,
             position:"relative",overflow:"hidden"
           }}>
             <div style={{position:"absolute",top:6,left:7,textAlign:"center",lineHeight:1}}>
@@ -857,7 +901,7 @@ function Money({ players, scores, stake }) {
   return (
     <Panel accent style={{marginTop:18}}>
       <div style={STYLES.money.headerRow}>
-        <div style={{...STYLES.money.avatar, background:`linear-gradient(135deg,${C.gold},${C.goldD})`, boxShadow:`0 4px 16px ${C.gold}44`}}><CoinsIcon size={22} color={C.dark}/></div>
+        <div style={{...STYLES.money.avatar, background:`linear-gradient(135deg,var(--gold-2),var(--gold-3))`, boxShadow:`0 4px 16px color-mix(in srgb, var(--gold-2) 27%, transparent)`}}><CoinsIcon size={22} color="var(--on-gold)"/></div>
         <div>
           <Lbl>Owed to {w.name}</Lbl>
           <div style={{...STYLES.money.sub, color:"var(--text-3)"}}>{fmtStake(stake)} per point · winner on {w.score}pts</div>
@@ -891,7 +935,7 @@ function Money({ players, scores, stake }) {
 }
 
 // ─── SETUP ────────────────────────────────────────────────────────────────────
-function Setup({ onStart, initNames, initRounds, initStake }) {
+function Setup({ onStart, initNames, initRounds, initStake, theme, onThemeChange }) {
   const [names,setNames]=useState(initNames||["","","","",""]);
   const [rounds,setRounds]=useState(initRounds||10);
   const [stake,setStake]=useState(initStake||5);
@@ -959,6 +1003,26 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
           boxShadow:valid?"var(--shadow-gold)":"none",transition:"box-shadow .2s",minHeight:52
         }}>Continue →</button>
       </Panel>
+      {onThemeChange&&(
+        <div role="group" aria-label="Theme" style={{display:"flex",justifyContent:"center",gap:6,marginTop:18,padding:"4px",borderRadius:999,background:"var(--bg-surface)",border:"1px solid var(--border-subtle)",width:"fit-content",margin:"18px auto 0"}}>
+          {(["dark","light"] as const).map(t=>{
+            const active=theme===t;
+            return(
+              <button key={t} onClick={()=>onThemeChange(t)} aria-pressed={active} className="press" style={{
+                padding:"8px 18px",minHeight:36,borderRadius:999,
+                border:active?"1px solid var(--border-strong)":"1px solid transparent",
+                background:active?"color-mix(in srgb, var(--gold-2) 12%, transparent)":"transparent",
+                color:active?"var(--gold-1)":"var(--text-2)",
+                fontSize:12,fontWeight:700,letterSpacing:"0.08em",textTransform:"uppercase",
+                fontFamily:"system-ui",cursor:"pointer",
+                transition:`all var(--dur-fast) var(--ease-smooth)`
+              }}>
+                {t==="dark"?"◗ Dark":"◐ Light"}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -1071,7 +1135,7 @@ function Podium({ sorted }) {
               ...STYLES.podium.platform,
               height:`${h}px`,
               fontSize:rank===0?24:18,
-              boxShadow:rank===0?`0 -6px 24px ${C.gold}55`:`0 -2px 10px rgba(0,0,0,.3)`,
+              boxShadow:rank===0?`0 -6px 24px color-mix(in srgb, var(--gold-2) 33%, transparent)`:`0 -2px 10px rgba(0,0,0,.3)`,
               animation:`podiumRise .5s ${rank===0?.05:rank===1?.15:.25}s cubic-bezier(.34,1.3,.64,1) both`
             }}/>
           </div>
@@ -1103,6 +1167,14 @@ export default function App() {
   const [roundStartedAt,setRoundStartedAt]=useState<number|null>(null);
   const [lastRoundMs,setLastRoundMs]=useState<number|null>(null);
   const [nowMs,setNowMs]=useState(()=>Date.now());
+  const [theme,setTheme]=useState<"light"|"dark">(()=>{
+    if(typeof window==="undefined")return"dark";
+    try{
+      const stored=localStorage.getItem("nominations-theme");
+      if(stored==="light"||stored==="dark")return stored;
+    }catch{/* ignore */}
+    return window.matchMedia?.("(prefers-color-scheme: light)").matches?"light":"dark";
+  });
 
   useEffect(()=>{
     const el=document.createElement("style");
@@ -1110,6 +1182,11 @@ export default function App() {
     document.head.appendChild(el);
     return()=>el.remove();
   },[]);
+
+  useEffect(()=>{
+    document.documentElement.dataset.theme=theme;
+    try{localStorage.setItem("nominations-theme",theme);}catch{/* ignore */}
+  },[theme]);
 
   useEffect(()=>{
     if(roundStartedAt===null)return;
@@ -1189,7 +1266,7 @@ export default function App() {
   // ── SETUP ──
   if(phase==="setup")return(
     <Felt center>
-      <Setup onStart={startGame} initNames={players.length?players:null} initRounds={totalRounds} initStake={stakePerPoint}/>
+      <Setup onStart={startGame} initNames={players.length?players:null} initRounds={totalRounds} initStake={stakePerPoint} theme={theme} onThemeChange={setTheme}/>
     </Felt>
   );
 
@@ -1221,11 +1298,11 @@ export default function App() {
                 <div style={{
                   ...STYLES.trump.dealerPillDef,
                   background:i===dealerIdx?"rgba(201,168,76,.16)":"rgba(255,255,255,.04)",
-                  border:`1px solid ${i===dealerIdx?C.gold+"55":"rgba(255,255,255,.08)"}`,
-                  color:i===dealerIdx?C.gold:C.cream,
+                  border:`1px solid ${i===dealerIdx?"color-mix(in srgb, var(--gold-2) 33%, transparent)":"rgba(255,255,255,.08)"}`,
+                  color:i===dealerIdx?"var(--gold-2)":"var(--text-1)",
                   fontWeight:i===dealerIdx?700:400,
-                  boxShadow:i===dealerIdx?`0 0 10px ${C.gold}22`:"none"
-                }}>{p}{i===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:C.gold,marginLeft:5,verticalAlign:"middle"}}/>}</div>
+                  boxShadow:i===dealerIdx?`0 0 10px color-mix(in srgb, var(--gold-2) 13%, transparent)`:"none"
+                }}>{p}{i===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"var(--gold-2)",marginLeft:5,verticalAlign:"middle"}}/>}</div>
                 {i<players.length-1&&<span style={{...STYLES.trump.separator, color:"var(--text-3)"}}>›</span>}
               </div>
             ))}
@@ -1391,10 +1468,10 @@ export default function App() {
                       <div style={{
                         padding:"10px 13px",borderRadius:20,fontSize:12,transition:"all .2s",minHeight:44,display:"flex",alignItems:"center",
                         background:active?"rgba(201,168,76,.2)":done?"rgba(26,107,60,.22)":"rgba(255,255,255,.04)",
-                        border:`1px solid ${active?C.gold:done?C.green+"88":"rgba(255,255,255,.08)"}`,
-                        color:active?C.gold:done?"#7ac47a":C.mutedD,fontWeight:active?700:400,
-                        boxShadow:active?`0 0 12px ${C.gold}22`:"none"
-                      }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:C.gold,marginLeft:5,verticalAlign:"middle"}}/>}</div>
+                        border:`1px solid ${active?"var(--gold-2)":done?"color-mix(in srgb, var(--green-pos) 53%, transparent)":"rgba(255,255,255,.08)"}`,
+                        color:active?"var(--gold-2)":done?"#7ac47a":"var(--text-3)",fontWeight:active?700:400,
+                        boxShadow:active?`0 0 12px color-mix(in srgb, var(--gold-2) 13%, transparent)`:"none"
+                      }}>{players[pi]}{done?` — ${noms[pi]}`:""}{pi===dealerIdx&&<span aria-hidden="true" style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:"var(--gold-2)",marginLeft:5,verticalAlign:"middle"}}/>}</div>
                     </div>
                     {pos<order.length-1&&<span style={{color:"#2a3a2a",fontSize:12,marginTop:12}}>›</span>}
                   </div>
@@ -1516,10 +1593,10 @@ export default function App() {
                     background:`linear-gradient(155deg,${pc}0d,var(--bg-surface) 40%)`,
                     border:`1px solid ${pc}33`,
                     borderLeft:`4px solid ${accentColor}`,
-                    boxShadow:isDealer?`0 0 0 1.5px ${C.gold}66, 0 4px 24px rgba(0,0,0,.5)`:"0 2px 12px rgba(0,0,0,.4)",
+                    boxShadow:isDealer?`0 0 0 1.5px color-mix(in srgb, var(--gold-2) 40%, transparent), 0 4px 24px rgba(0,0,0,.5)`:"0 2px 12px rgba(0,0,0,.4)",
                   }}>
                     {/* top glow tint */}
-                    {hit===true&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 0%,${C.green}0a,transparent 65%)`,pointerEvents:"none"}}/>}
+                    {hit===true&&<div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 50% 0%,color-mix(in srgb, var(--green-pos) 4%, transparent),transparent 65%)`,pointerEvents:"none"}}/>}
                     {hit===false&&<div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,rgba(192,57,43,.08),transparent 65%)",pointerEvents:"none"}}/>}
                     {hit===null&&<div style={{
                       position:"absolute",top:0,left:0,bottom:0,width:4,
@@ -1589,9 +1666,9 @@ export default function App() {
               {allResolved()&&!confirmEnd&&(
                 <button className="press btn-primary" onClick={()=>!impossibleResult&&setConfirmEnd(true)} style={{
                   ...STYLES.play.endRoundBtn,
-                  border:`1.5px solid ${impossibleResult?C.mutedD:C.gold}`,
-                  color:impossibleResult?C.mutedD:C.gold,
-                  boxShadow:impossibleResult?"none":`0 6px 28px ${C.gold}28`,
+                  border:`1.5px solid ${impossibleResult?"var(--text-3)":"var(--gold-2)"}`,
+                  color:impossibleResult?"var(--text-3)":"var(--gold-2)",
+                  boxShadow:impossibleResult?"none":`0 6px 28px color-mix(in srgb, var(--gold-2) 16%, transparent)`,
                   cursor:impossibleResult?"not-allowed":"pointer",
                   opacity:impossibleResult?0.5:1,
                 }}>{round+1>=totalRounds?"See Final Results →":`End Round ${round+1} →`}</button>
