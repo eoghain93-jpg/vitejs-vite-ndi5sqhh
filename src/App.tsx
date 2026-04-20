@@ -29,6 +29,19 @@ const fmtDuration = (ms: number): string => {
   return h>0?`${h}:${pad(m)}:${pad(sec)}`:`${m}:${pad(sec)}`;
 };
 
+const SAVE_KEY = "nominations-game-v1";
+const fmtAgo = (ms: number): string => {
+  if(ms<0)return"just now";
+  const s=Math.floor(ms/1000);
+  if(s<60)return"just now";
+  const m=Math.floor(s/60);
+  if(m<60)return`${m} min ago`;
+  const h=Math.floor(m/60);
+  if(h<24)return`${h} hr ago`;
+  const d=Math.floor(h/24);
+  return`${d} day${d===1?"":"s"} ago`;
+};
+
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 // Static style objects hoisted out of JSX render (React perf best practice).
 // Dynamic values (player color, hit state, active state) remain inline.
@@ -107,7 +120,7 @@ const STYLES = {
     wrap:      { width:"100%", maxWidth:440, textAlign:"center" },
     heading:   { fontFamily:"'Playfair Display',serif", fontSize:34, fontWeight:900, marginBottom:6, textShadow:`0 2px 20px rgba(201,168,76,.35)` },
     sub:       { fontSize:16, marginBottom:32, fontStyle:"italic" },
-    spotlight: { position:"relative", background:"radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%)", borderRadius:24, padding:"0 0 32px" },
+    spotlight: { position:"relative", background:"var(--spotlight-bg)", borderRadius:24, padding:"0 0 32px" },
     result:    { textAlign:"center" },
     resultName:{ fontSize:40, fontWeight:900, fontFamily:"'Playfair Display',serif", marginBottom:24, letterSpacing:-.5 },
   },
@@ -382,6 +395,8 @@ const CSS = `
     --shadow-3:      0 12px 32px rgba(0,0,0,.6);
     --shadow-gold:   0 0 20px rgba(201,168,76,.25);
     --felt-grad:     radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, #070709 60%);
+    --spotlight-bg:  radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%);
+    --wheel-shadow:  rgba(0,0,0,.9);
   }
   [data-theme="light"] {
     --bg-base:       #f4ecdb;
@@ -410,6 +425,8 @@ const CSS = `
     --shadow-3:      0 14px 36px rgba(40,30,10,.15);
     --shadow-gold:   0 6px 22px rgba(157,121,32,.22);
     --felt-grad:     radial-gradient(ellipse at 50% 0%, #f9f0dc 0%, #f4ecdb 60%);
+    --spotlight-bg:  none;
+    --wheel-shadow:  rgba(40,30,10,.12);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
   body{background:var(--bg-base);overscroll-behavior:contain;transition:background-color var(--dur-mid) var(--ease-smooth);}
@@ -626,6 +643,7 @@ function SpinWheel({ players, onDone }) {
       goldL: get("--gold-1", "#f0d080"),
       goldD: get("--gold-3", "#8a6f2e"),
       hub:   "#060e08",
+      wheelShadow: get("--wheel-shadow", "rgba(0,0,0,.9)"),
     };
   }
 
@@ -644,7 +662,7 @@ function SpinWheel({ players, onDone }) {
     ctx.restore();
 
     // Dark base disc
-    ctx.save(); ctx.shadowColor="rgba(0,0,0,.9)"; ctx.shadowBlur=28;
+    ctx.save(); ctx.shadowColor=TC.wheelShadow; ctx.shadowBlur=28;
     ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI); ctx.fillStyle="#081508"; ctx.fill(); ctx.restore();
 
     // Slices
@@ -1175,6 +1193,18 @@ export default function App() {
     }catch{/* ignore */}
     return window.matchMedia?.("(prefers-color-scheme: light)").matches?"light":"dark";
   });
+  const [pendingResume,setPendingResume]=useState<any|null>(()=>{
+    if(typeof window==="undefined")return null;
+    try{
+      const raw=localStorage.getItem(SAVE_KEY);
+      if(!raw)return null;
+      const snap=JSON.parse(raw);
+      if(snap?.v!==1)return null;
+      if(snap.phase==="setup"||snap.phase==="end")return null;
+      if(!Array.isArray(snap.players)||snap.players.length<2)return null;
+      return snap;
+    }catch{return null;}
+  });
 
   useEffect(()=>{
     const el=document.createElement("style");
@@ -1187,6 +1217,24 @@ export default function App() {
     document.documentElement.dataset.theme=theme;
     try{localStorage.setItem("nominations-theme",theme);}catch{/* ignore */}
   },[theme]);
+
+  useEffect(()=>{
+    if(phase==="end"){
+      try{localStorage.removeItem(SAVE_KEY);}catch{/* ignore */}
+      return;
+    }
+    if(phase==="setup")return;
+    try{
+      localStorage.setItem(SAVE_KEY,JSON.stringify({
+        v:1, savedAt:Date.now(),
+        phase, players, totalRounds, stakePerPoint,
+        round, dealerIdx, initialDealerIdx,
+        scores, trump, history, noms, nomIdx, hits, prevScores,
+        roundStartedAt, lastRoundMs,
+      }));
+    }catch{/* ignore */}
+  },[phase,players,totalRounds,stakePerPoint,round,dealerIdx,initialDealerIdx,
+     scores,trump,history,noms,nomIdx,hits,prevScores,roundStartedAt,lastRoundMs]);
 
   useEffect(()=>{
     if(roundStartedAt===null)return;
@@ -1210,7 +1258,33 @@ export default function App() {
     return f>=0&&f<=roundCards?[f]:[];
   }
 
-  function startGame(pl,rnds,stk){setPlayers(pl);setTotalRounds(rnds);setStakePerPoint(stk);setScores(Array(pl.length).fill(0));setHistory([]);setRoundStartedAt(null);setLastRoundMs(null);setPhase("spin");}
+  function startGame(pl,rnds,stk){setPlayers(pl);setTotalRounds(rnds);setStakePerPoint(stk);setScores(Array(pl.length).fill(0));setHistory([]);setRoundStartedAt(null);setLastRoundMs(null);setPendingResume(null);setPhase("spin");}
+
+  function resumeGame(){
+    if(!pendingResume)return;
+    setPlayers(pendingResume.players);
+    setTotalRounds(pendingResume.totalRounds);
+    setStakePerPoint(pendingResume.stakePerPoint);
+    setRound(pendingResume.round);
+    setDealerIdx(pendingResume.dealerIdx);
+    setInitialDealerIdx(pendingResume.initialDealerIdx);
+    setScores(pendingResume.scores);
+    setTrump(pendingResume.trump);
+    setHistory(pendingResume.history);
+    setNoms(pendingResume.noms);
+    setNomIdx(pendingResume.nomIdx);
+    setHits(pendingResume.hits);
+    setPrevScores(pendingResume.prevScores);
+    setRoundStartedAt(pendingResume.roundStartedAt);
+    setLastRoundMs(pendingResume.lastRoundMs);
+    setPhase(pendingResume.phase);
+    setPendingResume(null);
+  }
+
+  function discardResume(){
+    try{localStorage.removeItem(SAVE_KEY);}catch{/* ignore */}
+    setPendingResume(null);
+  }
 
   function afterSpin(name){
     const idx=players.indexOf(name);
@@ -1265,9 +1339,35 @@ export default function App() {
 
   // ── SETUP ──
   if(phase==="setup")return(
-    <Felt center>
-      <Setup onStart={startGame} initNames={players.length?players:null} initRounds={totalRounds} initStake={stakePerPoint} theme={theme} onThemeChange={setTheme}/>
-    </Felt>
+    <>
+      <Felt center>
+        <Setup onStart={startGame} initNames={players.length?players:null} initRounds={totalRounds} initStake={stakePerPoint} theme={theme} onThemeChange={setTheme}/>
+      </Felt>
+      {pendingResume&&(
+        <div role="dialog" aria-modal="true" aria-labelledby="resume-title" style={{
+          position:"fixed",inset:0,zIndex:50,
+          background:"rgba(0,0,0,.6)",backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)",
+          display:"flex",alignItems:"center",justifyContent:"center",padding:20
+        }}>
+          <Panel accent style={{maxWidth:360,width:"100%",textAlign:"center"}} className="pop-in">
+            <Lbl style={{marginBottom:10}}>Game in progress</Lbl>
+            <div id="resume-title" style={{color:"var(--text-1)",fontSize:22,fontWeight:700,fontFamily:"'Playfair Display',serif",marginBottom:8,lineHeight:1.2}}>
+              Resume where you left off?
+            </div>
+            <div style={{color:"var(--text-2)",fontSize:13,marginBottom:4}}>
+              Round {pendingResume.round+1} of {pendingResume.totalRounds} · {pendingResume.players.length} players
+            </div>
+            <div style={{color:"var(--text-3)",fontSize:12,marginBottom:18}}>
+              saved {fmtAgo(Date.now()-pendingResume.savedAt)}
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <Btn v="ghost" full onClick={discardResume}>Start New</Btn>
+              <Btn v="gold" full onClick={resumeGame}>Resume →</Btn>
+            </div>
+          </Panel>
+        </div>
+      )}
+    </>
   );
 
   // ── SPIN ──
@@ -1634,9 +1734,9 @@ export default function App() {
                       ].map(({val,label,pts,activeC,activeBg,activeBd})=>(
                         <button key={String(val)} className="press" onClick={()=>toggleHit(i,val)} style={{
                           ...STYLES.play.hitBtnBase,
-                          border:`1.5px solid ${hit===val?activeBd:"rgba(255,255,255,.08)"}`,
-                          background:hit===val?activeBg:"rgba(255,255,255,.03)",
-                          color:hit===val?activeC:"var(--text-3)",
+                          border:`1.5px solid ${hit===val?activeBd:"var(--border-subtle)"}`,
+                          background:hit===val?activeBg:"var(--bg-raised)",
+                          color:hit===val?activeC:"var(--text-2)",
                           fontWeight:hit===val?700:400,
                         }}>
                           {label} <span style={{fontSize:12,opacity:.75,fontVariantNumeric:"tabular-nums"}}>{pts}pts</span>
