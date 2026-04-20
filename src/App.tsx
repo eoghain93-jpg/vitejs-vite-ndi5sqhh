@@ -25,6 +25,12 @@ const PLAYER_COLORS = ["#c9a84c","#5ba3e8","#e85b8a","#5bca8a","#e87a4a","#9b6be
 const fmtMoney = p => { if(!p)return"0p"; const l=Math.floor(p/100),r=p%100; return l>0?`£${l}.${r.toString().padStart(2,"0")}`:`${p}p`; };
 const fmtStake = p => p>=100?`£${(p/100).toFixed(p%100===0?0:2)}`:`${p}p`;
 const getRoundCards = (ri,tot) => tot-ri;
+const fmtDuration = (ms: number): string => {
+  if(!ms||ms<0)return"0:00";
+  const s=Math.floor(ms/1000), h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  const pad=(n:number)=>n.toString().padStart(2,"0");
+  return h>0?`${h}:${pad(m)}:${pad(sec)}`:`${m}:${pad(sec)}`;
+};
 
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 // Static style objects hoisted out of JSX render (React perf best practice).
@@ -821,7 +827,10 @@ function RoundHistory({ history, players }) {
             <Card suit={r.trump} size="sm"/>
             <div>
               <div style={{...STYLES.history.roundLbl, color:"var(--text-3)"}}>Round {r.round+1}</div>
-              <div style={{...STYLES.history.roundSub, color:"var(--text-3)"}}>{r.roundCards} cards · {SUIT_NAME[r.trump]} trump</div>
+              <div style={{...STYLES.history.roundSub, color:"var(--text-3)"}}>
+                {r.roundCards} cards · {SUIT_NAME[r.trump]} trump
+                {r.durationMs!=null&&r.durationMs>0&&<> · <span style={{fontVariantNumeric:"tabular-nums"}}>⏱ {fmtDuration(r.durationMs)}</span></>}
+              </div>
             </div>
           </div>
           {players.map((p,pi)=>{
@@ -955,7 +964,7 @@ function Setup({ onStart, initNames, initRounds, initStake }) {
 }
 
 // ─── ROUND SUMMARY ────────────────────────────────────────────────────────────
-function RoundSummary({ players, nominations, hits, scores, prevScores, round, trump, onNext, isLast }) {
+function RoundSummary({ players, nominations, hits, scores, prevScores, round, trump, onNext, isLast, durationMs }) {
   const rankBefore=[...players].map((p,i)=>({name:p,score:prevScores[i]})).sort((a,b)=>b.score-a.score).map(p=>p.name);
   const rankAfter=[...players].map((p,i)=>({name:p,score:scores[i]})).sort((a,b)=>b.score-a.score).map(p=>p.name);
   return (
@@ -965,7 +974,10 @@ function RoundSummary({ players, nominations, hits, scores, prevScores, round, t
           <Card suit={trump} size="lg" glow style={{margin:"0 auto"}}/>
           <Lbl style={{textAlign:"center",marginTop:16,marginBottom:8}}>Round {round+1} Complete</Lbl>
           <h2 style={{...STYLES.summary.h2, color:"var(--text-1)"}}>Round Summary</h2>
-          <div style={{...STYLES.summary.sub, color:"var(--text-2)"}}>{SUIT_NAME[trump]} was trump</div>
+          <div style={{...STYLES.summary.sub, color:"var(--text-2)"}}>
+            {SUIT_NAME[trump]} was trump
+            {durationMs!=null&&durationMs>0&&<> · <span style={{fontVariantNumeric:"tabular-nums"}}>⏱ {fmtDuration(durationMs)}</span></>}
+          </div>
         </div>
         <Panel>
           {players.map((name,i)=>{
@@ -1088,6 +1100,9 @@ export default function App() {
   const [tab,setTab]=useState("game");
   const [confirmEnd,setConfirmEnd]=useState(false);
   const [confirmPlayAgain,setConfirmPlayAgain]=useState(false);
+  const [roundStartedAt,setRoundStartedAt]=useState<number|null>(null);
+  const [lastRoundMs,setLastRoundMs]=useState<number|null>(null);
+  const [nowMs,setNowMs]=useState(()=>Date.now());
 
   useEffect(()=>{
     const el=document.createElement("style");
@@ -1095,6 +1110,14 @@ export default function App() {
     document.head.appendChild(el);
     return()=>el.remove();
   },[]);
+
+  useEffect(()=>{
+    if(roundStartedAt===null)return;
+    if(phase!=="trump"&&phase!=="nominate"&&phase!=="play")return;
+    setNowMs(Date.now());
+    const id=window.setInterval(()=>setNowMs(Date.now()),1000);
+    return()=>window.clearInterval(id);
+  },[roundStartedAt,phase]);
 
   const roundCards=getRoundCards(round,totalRounds);
 
@@ -1110,7 +1133,7 @@ export default function App() {
     return f>=0&&f<=roundCards?[f]:[];
   }
 
-  function startGame(pl,rnds,stk){setPlayers(pl);setTotalRounds(rnds);setStakePerPoint(stk);setScores(Array(pl.length).fill(0));setHistory([]);setPhase("spin");}
+  function startGame(pl,rnds,stk){setPlayers(pl);setTotalRounds(rnds);setStakePerPoint(stk);setScores(Array(pl.length).fill(0));setHistory([]);setRoundStartedAt(null);setLastRoundMs(null);setPhase("spin");}
 
   function afterSpin(name){
     const idx=players.indexOf(name);
@@ -1123,7 +1146,9 @@ export default function App() {
     setRound(r);setDealerIdx(dealer);
     setNoms(Array(players.length).fill(null));setHits(Array(players.length).fill(null));
     setTrump(null);setTab("game");setConfirmEnd(false);setPrevScores(curScores);
-    setNomIdx(nomOrder(dealer,players.length)[0]);setPhase("trump");
+    setNomIdx(nomOrder(dealer,players.length)[0]);
+    const now=Date.now();setRoundStartedAt(now);setNowMs(now);
+    setPhase("trump");
   }
 
   function pickTrump(s){setTrump(s);setPhase("nominate");}
@@ -1147,9 +1172,12 @@ export default function App() {
   function undoHit(){for(let i=hits.length-1;i>=0;i--){if(hits[i]!==null){setHits(prev=>prev.map((x,j)=>j===i?null:x));return;}}}
 
   function endRound(){
+    const durationMs=roundStartedAt!=null?Date.now()-roundStartedAt:0;
     const ns=scores.map((s,i)=>s+(hits[i]?10+noms[i]:0));
-    setHistory(h=>[...h,{round,roundCards,trump,nominations:[...noms],hits:[...hits]}]);
-    setScores(ns);setPrevScores(scores);setConfirmEnd(false);setPhase("roundSummary");
+    setHistory(h=>[...h,{round,roundCards,trump,nominations:[...noms],hits:[...hits],durationMs}]);
+    setScores(ns);setPrevScores(scores);setConfirmEnd(false);
+    setLastRoundMs(durationMs);setRoundStartedAt(null);
+    setPhase("roundSummary");
   }
 
   function afterSummary(){
@@ -1212,7 +1240,8 @@ export default function App() {
   if(phase==="roundSummary")return(
     <>
       <RoundSummary players={players} nominations={noms} hits={hits} scores={scores}
-        prevScores={prevScores} round={round} trump={trump} onNext={afterSummary} isLast={round+1>=totalRounds}/>
+        prevScores={prevScores} round={round} trump={trump} onNext={afterSummary} isLast={round+1>=totalRounds}
+        durationMs={lastRoundMs}/>
     </>
   );
 
@@ -1225,7 +1254,16 @@ export default function App() {
         <div style={STYLES.end.outer} className="fade-up">
           <Lbl style={{textAlign:"center",marginBottom:10}}>Game Over</Lbl>
           <h1 style={{...STYLES.end.h1, color:"var(--gold-2)", textShadow:`0 2px 28px rgba(201,168,76,.4)`}}>Final Standings</h1>
-          <p style={{...STYLES.end.sub, color:"var(--text-2)"}}>{totalRounds} rounds played</p>
+          <p style={{...STYLES.end.sub, color:"var(--text-2)"}}>
+            {totalRounds} rounds played
+            {(() => {
+              const totalMs=history.reduce((s,r)=>s+(r.durationMs||0),0);
+              const timed=history.filter(r=>r.durationMs>0).length;
+              if(totalMs<=0)return null;
+              const avg=timed>0?Math.round(totalMs/timed):0;
+              return <> · <span style={{fontVariantNumeric:"tabular-nums"}}>⏱ {fmtDuration(totalMs)}</span>{avg>0&&<span style={{color:"var(--text-3)"}}> · avg {fmtDuration(avg)}</span>}</>;
+            })()}
+          </p>
           <Podium sorted={sorted}/>
           {/* Full list */}
           <Panel style={{marginBottom:0,textAlign:"left"}}>
@@ -1253,7 +1291,7 @@ export default function App() {
               <div style={{...STYLES.end.confirmSub, color:"var(--text-2)"}}>Scores will reset to zero.</div>
               <div style={STYLES.end.confirmBtns}>
                 <Btn v="ghost" full onClick={()=>setConfirmPlayAgain(false)}>Cancel</Btn>
-                <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setPhase("dealerSelect");}}>Confirm →</Btn>
+                <Btn v="gold" full onClick={()=>{setConfirmPlayAgain(false);setScores(Array(players.length).fill(0));setHistory([]);setRoundStartedAt(null);setLastRoundMs(null);setPhase("dealerSelect");}}>Confirm →</Btn>
               </div>
             </Panel>
           ):(
@@ -1305,6 +1343,7 @@ export default function App() {
           <div style={{...STYLES.hdr.sub, color:"var(--text-3)"}}>
             Round {round+1} of {totalRounds} · {roundCards} cards
             {trump&&<> · Trump: <span style={{color:SUIT_COLOR[trump],fontWeight:700}}>{trump}</span></>}
+            {roundStartedAt!=null&&<> · <span style={{fontVariantNumeric:"tabular-nums",color:"var(--gold-2)"}} aria-label="Round time">⏱ {fmtDuration(nowMs-roundStartedAt)}</span></>}
           </div>
         </div>
         <div style={{display:"flex",gap:10,alignItems:"center"}}>
