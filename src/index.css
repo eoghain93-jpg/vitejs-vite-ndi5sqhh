@@ -1,25 +1,44 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/* ─── SELF-HOSTED FONTS ────────────────────────────────────────────────────────
+   Variable woff2 files served from /public/fonts so the app works fully
+   offline (previously loaded from the Google Fonts CDN). */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/playfair-display.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('/fonts/playfair-display-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/eb-garamond.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/eb-garamond-italic.woff2') format('woff2');
+}
 
+/* ─── BASE ─────────────────────────────────────────────────────────────────────
+   Inherited typography and element defaults (kept from the original template
+   stylesheet — the app's layout was designed against these). */
+:root {
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -30,40 +49,14 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 #root {
   min-height: 100svh;
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-}
-
 h1,
 h2 {
-  font-family: var(--heading);
   font-weight: 500;
-  color: var(--text-h);
 }
 
 h1 {
@@ -88,17 +81,124 @@ p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+/* ─── THEME TOKENS ─────────────────────────────────────────────────────────────
+   App-wide design tokens; [data-theme] is set on <html> by App. */
+:root {
+  --ease-out:      cubic-bezier(0.22,1,0.36,1);
+  --ease-spring:   cubic-bezier(0.34,1.56,0.64,1);
+  --ease-smooth:   cubic-bezier(0.4,0,0.2,1);
+  --dur-fast:      150ms;
+  --dur-mid:       280ms;
+  --dur-slow:      500ms;
 }
+[data-theme="dark"], :root:not([data-theme]) {
+  --bg-base:       #070709;
+  --bg-surface:    #0f1012;
+  --bg-raised:     #161719;
+  --bg-table:      #0b3d1e;
+  --bg-table-mid:  #0f4d26;
+  --gold-1:        #f0d080;
+  --gold-2:        #c9a84c;
+  --gold-3:        #8a6f2e;
+  --gold-4:        #3a2c0a;
+  --green-pos:     #22c55e;
+  --green-deep:    #16a34a;
+  --red-neg:       #ef4444;
+  --text-1:        #f5f0e8;
+  --text-2:        #a89f8c;
+  --text-3:        #5a5248;
+  --on-gold:       #2a1f05;
+  --suit-red:      #ef4444;
+  --suit-dark:     #1a1a2e;
+  --border-subtle: rgba(255,255,255,.06);
+  --border-mid:    rgba(201,168,76,.18);
+  --border-strong: rgba(201,168,76,.45);
+  --shadow-1:      0 1px 3px rgba(0,0,0,.4);
+  --shadow-2:      0 4px 12px rgba(0,0,0,.5);
+  --shadow-3:      0 12px 32px rgba(0,0,0,.6);
+  --shadow-gold:   0 0 20px rgba(201,168,76,.25);
+  --felt-grad:     radial-gradient(ellipse at 50% 0%, #0d1a0f 0%, #070709 60%);
+  --spotlight-bg:  radial-gradient(ellipse 80% 60% at 50% 60%, rgba(11,61,30,.7) 0%, transparent 70%);
+  --wheel-shadow:  rgba(0,0,0,.9);
+}
+[data-theme="light"] {
+  --bg-base:       #f4ecdb;
+  --bg-surface:    #faf3e3;
+  --bg-raised:     #ffffff;
+  --bg-table:      #ecd9b5;
+  --bg-table-mid:  #e4d0a5;
+  --gold-1:        #c49231;
+  --gold-2:        #9d7920;
+  --gold-3:        #6a4e0f;
+  --gold-4:        #3a2c0a;
+  --green-pos:     #1f7a43;
+  --green-deep:    #186236;
+  --red-neg:       #a83232;
+  --text-1:        #1c1814;
+  --text-2:        #4a4233;
+  --text-3:        #8a7f69;
+  --on-gold:       #fff5e0;
+  --suit-red:      #a83232;
+  --suit-dark:     #1a1a2e;
+  --border-subtle: rgba(40,30,10,.08);
+  --border-mid:    rgba(40,30,10,.18);
+  --border-strong: rgba(157,121,32,.55);
+  --shadow-1:      0 2px 8px rgba(40,30,10,.06);
+  --shadow-2:      0 6px 24px rgba(40,30,10,.09);
+  --shadow-3:      0 14px 36px rgba(40,30,10,.15);
+  --shadow-gold:   0 6px 22px rgba(157,121,32,.22);
+  --felt-grad:     radial-gradient(ellipse at 50% 0%, #f9f0dc 0%, #f4ecdb 60%);
+  --spotlight-bg:  none;
+  --wheel-shadow:  rgba(40,30,10,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+body{background:var(--bg-base);overscroll-behavior:contain;transition:background-color var(--dur-mid) var(--ease-smooth);}
+button,input{font-family:inherit;touch-action:manipulation;}
+::selection{background:color-mix(in srgb, var(--gold-2) 20%, transparent);}
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+@keyframes fadeUp   {from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn    {from{opacity:0;transform:scale(0.88)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer  {0%,100%{background-position:200% center}50%{background-position:0% center}}
+@keyframes ripple   {0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--gold-2) 33%, transparent)}100%{box-shadow:0 0 0 14px color-mix(in srgb, var(--gold-2) 0%, transparent)}}
+@keyframes glow     {0%,100%{text-shadow:0 0 8px color-mix(in srgb, var(--gold-2) 20%, transparent)}50%{text-shadow:0 0 28px color-mix(in srgb, var(--gold-2) 67%, transparent)}}
+@keyframes spin-glow{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb, var(--gold-2) 20%, transparent),0 12px 40px rgba(0,0,0,.53)}50%{box-shadow:0 0 0 3px color-mix(in srgb, var(--gold-2) 60%, transparent),0 12px 40px rgba(0,0,0,.53)}}
+@keyframes slideIn  {from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes confetti {0%{transform:translateY(-16px) rotate(0deg);opacity:1}100%{transform:translateY(108vh) rotate(580deg);opacity:0}}
+@keyframes podiumRise{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+@keyframes rankIn   {from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pending-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+
+.fade-up    {animation:fadeUp var(--dur-mid) var(--ease-out) both;}
+.pop-in     {animation:popIn  var(--dur-mid) var(--ease-spring) both;}
+.glow-txt   {animation:glow 2s var(--ease-smooth) infinite;}
+.ripple-btn {animation:ripple 1.5s var(--ease-out) infinite;}
+.slide-in   {animation:slideIn var(--dur-mid) var(--ease-out) both;}
+
+.nom-chip:hover:not(:disabled){transform:scale(1.1)!important;background:var(--bg-raised)!important;border-color:var(--border-strong)!important;box-shadow:var(--shadow-gold)!important;}
+.nom-chip:active:not(:disabled){transform:scale(0.94)!important;}
+.suit-card:hover{transform:translateY(-8px) scale(1.06)!important;box-shadow:0 16px 40px rgba(0,0,0,.75)!important;}
+.suit-card:active{transform:translateY(-3px) scale(1.02)!important;}
+.press:active{transform:scale(0.97)!important;}
+.tab-pill:hover{border-color:var(--border-strong)!important;color:var(--gold-2)!important;}
+.input-field:focus{border-color:var(--border-strong)!important;box-shadow:0 0 0 3px rgba(201,168,76,.08)!important;}
+
+/* Gold metallic gradient on primary CTA */
+.btn-primary{
+  background:linear-gradient(180deg,var(--gold-4) 0%,var(--gold-3) 50%,var(--gold-2) 100%);
+}
+.btn-primary:hover{box-shadow:var(--shadow-gold)!important;filter:brightness(1.12);}
+.btn-primary:active{filter:brightness(0.95);}
+.suit-grid{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+@media(min-width:768px){.suit-grid{flex-wrap:nowrap;gap:24px;}}
+
+/* ── iPad layout ── */
+@media(min-width:768px){
+  :root{
+    --t-display-size: 36px;
+  }
+  .spin-canvas{width:480px!important;height:480px!important;}
+  .max-game-width{max-width:600px!important;}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
 }
