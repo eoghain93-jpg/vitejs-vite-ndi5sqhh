@@ -19,6 +19,9 @@ export type StatsStore = { v: 1; players: Record<string, PlayerStats> };
 
 export const STATS_KEY = "nominations-stats-v1";
 
+// Canonical stats-store key for a display name.
+export const statsKey = (name: string): string => name.trim().toLowerCase();
+
 export function loadStats(): StatsStore {
   try{
     const raw=localStorage.getItem(STATS_KEY);
@@ -32,6 +35,32 @@ export function loadStats(): StatsStore {
 
 export function clearStats(): void {
   try{localStorage.removeItem(STATS_KEY);}catch{/* ignore */}
+}
+
+// Combine two records into one — used when the same person was entered under
+// two spellings ("Sara" / "Sarah"). Counts are summed, personal bests take the
+// max, and `keepKey` decides which display name survives.
+export function mergePlayers(keyA: string, keyB: string, keepKey: string): void {
+  const store=loadStats();
+  const a=store.players[keyA], b=store.players[keyB];
+  if(!a||!b||keyA===keyB)return;
+  const keep=keepKey===keyB?b:a;
+  const merged: PlayerStats={
+    name: keep.name,
+    games: a.games+b.games,
+    wins: a.wins+b.wins,
+    callsMade: a.callsMade+b.callsMade,
+    callsHit: a.callsHit+b.callsHit,
+    totalPoints: a.totalPoints+b.totalPoints,
+    bestScore: Math.max(a.bestScore,b.bestScore),
+    bestStreak: Math.max(a.bestStreak,b.bestStreak),
+    moneyNet: a.moneyNet+b.moneyNet,
+    lastPlayedAt: Math.max(a.lastPlayedAt,b.lastPlayedAt),
+  };
+  delete store.players[keyA];
+  delete store.players[keyB];
+  store.players[statsKey(merged.name)]=merged;
+  try{localStorage.setItem(STATS_KEY,JSON.stringify(store));}catch{/* ignore */}
 }
 
 const blank = (name: string): PlayerStats => ({
@@ -53,7 +82,7 @@ export function recordGame(
   const now=Date.now();
 
   players.forEach((name,i)=>{
-    const key=name.trim().toLowerCase();
+    const key=statsKey(name);
     const p=store.players[key]??blank(name.trim());
     p.name=name.trim();
     p.games+=1;

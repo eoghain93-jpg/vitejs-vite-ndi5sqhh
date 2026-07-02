@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { C } from "../lib/constants";
 import { fmtStake } from "../lib/format";
+import { loadStats } from "../lib/stats";
 import { STYLES } from "./styles";
 import { Panel, Lbl, Divider } from "./primitives";
 import { CardFan } from "./PlayingCard";
@@ -11,7 +12,23 @@ export function Setup({ onStart, initNames, initRounds, initStake, theme, onThem
   const [names,setNames]=useState(initNames||["","","","",""]);
   const [rounds,setRounds]=useState(initRounds||10);
   const [stake,setStake]=useState(initStake||5);
+  // Known players from the Hall of Fame, most recent first — suggested while
+  // typing so the same person isn't re-entered under a new spelling.
+  const [knownNames]=useState<string[]>(()=>
+    Object.values(loadStats().players)
+      .sort((a,b)=>b.lastPlayedAt-a.lastPlayedAt)
+      .map(p=>p.name));
+  const [focusIdx,setFocusIdx]=useState<number|null>(null);
   const setN=(i,v)=>setNames(n=>n.map((x,j)=>j===i?v.slice(0,20):x));
+
+  const suggestionsFor=(i: number): string[]=>{
+    const cur=names[i].trim().toLowerCase();
+    const used=new Set(names.map((n,j)=>j!==i?n.trim().toLowerCase():"").filter(Boolean));
+    return knownNames.filter(kn=>{
+      const k=kn.toLowerCase();
+      return !used.has(k)&&k!==cur&&(cur===""||k.startsWith(cur));
+    }).slice(0,4);
+  };
   const filled=names.map((n:string)=>n.trim()).filter(Boolean);
   const hasDupes=filled.length!==new Set(filled).size;
   const valid=filled.length>=2&&!hasDupes;
@@ -30,16 +47,35 @@ export function Setup({ onStart, initNames, initRounds, initStake, theme, onThem
         <Lbl style={{marginBottom:12}}>
           Players <span style={{color:C.mutedD,textTransform:"none",letterSpacing:0,fontSize:11,fontStyle:"italic"}}>(order = clockwise seating)</span>
         </Lbl>
-        {names.map((name,i)=>(
-          <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
-            <div style={{...STYLES.setup.playerNum, color:"var(--text-2)"}}>{i+1}</div>
-            <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
-              style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
-            {names.length>2&&(
-              <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} aria-label={`Remove player ${i+1}`} style={STYLES.setup.removeBtn}>×</button>
+        {names.map((name,i)=>{
+          const sugg=focusIdx===i?suggestionsFor(i):[];
+          return(
+          <div key={i} style={{marginBottom:8}}>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <div style={{...STYLES.setup.playerNum, color:"var(--text-2)"}}>{i+1}</div>
+              <input className="input-field" value={name} onChange={e=>setN(i,e.target.value)} placeholder={`Player ${i+1}`}
+                onFocus={()=>setFocusIdx(i)}
+                onBlur={()=>setTimeout(()=>setFocusIdx(f=>f===i?null:f),150)}
+                style={{flex:1,background:"var(--bg-raised)",border:"1px solid var(--border-subtle)",borderRadius:10,padding:"12px 16px",color:"var(--text-1)",fontSize:15,outline:"none",transition:`border-color var(--dur-fast),box-shadow var(--dur-fast)`,minHeight:48,fontFamily:"system-ui"}}/>
+              {names.length>2&&(
+                <button onClick={()=>setNames(n=>n.filter((_,j)=>j!==i))} aria-label={`Remove player ${i+1}`} style={STYLES.setup.removeBtn}>×</button>
+              )}
+            </div>
+            {sugg.length>0&&(
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,padding:"6px 0 2px 30px"}}>
+                {sugg.map(kn=>(
+                  <button key={kn} onMouseDown={e=>e.preventDefault()} onClick={()=>{setN(i,kn);setFocusIdx(null);}}
+                    aria-label={`Use name ${kn}`} style={{
+                    padding:"6px 13px",minHeight:32,borderRadius:999,cursor:"pointer",
+                    background:"color-mix(in srgb, var(--gold-2) 8%, transparent)",
+                    border:"1px solid var(--border-mid)",color:"var(--gold-1)",
+                    fontSize:12,fontFamily:"system-ui",
+                  }}>{kn}</button>
+                ))}
+              </div>
             )}
           </div>
-        ))}
+        );})}
         {names.length<8&&(
           <button onClick={()=>setNames(n=>[...n,""])} style={STYLES.setup.addBtn}>＋ Add Player</button>
         )}

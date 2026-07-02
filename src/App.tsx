@@ -4,7 +4,7 @@ import { C, SUIT_COLOR, SAVE_KEY, THEME_KEY, PLAYER_COLORS } from "./lib/constan
 import { getRoundCards, nomOrder, pointsFor, scoresFromHistory, bustedCalls, roundResultIssue } from "./lib/game";
 import type { RoundRecord } from "./lib/game";
 import { fmtDuration, fmtAgo } from "./lib/format";
-import { loadStats, clearStats, recordGame } from "./lib/stats";
+import { loadStats, clearStats, recordGame, mergePlayers } from "./lib/stats";
 import { haptic } from "./lib/haptics";
 import { useWakeLock } from "./hooks/useWakeLock";
 
@@ -255,6 +255,7 @@ export default function App() {
       stats={Object.values(loadStats().players)}
       onBack={()=>setPhase("setup")}
       onClear={()=>{clearStats();setStatsVersion(v=>v+1);}}
+      onMerge={(a,b,keep)=>{mergePlayers(a,b,keep);setStatsVersion(v=>v+1);}}
     />
   );
 
